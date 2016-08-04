@@ -1,0 +1,24 @@
+#title {
+    float: right;
+	margin-top: 15px;
+	font: normal 32px "omnes-pro", Helvetica, Arial, sans-serif;
+    margin-right: 50%;
+	font-size: 42px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #000;
+}
+
+#terminalWrap {
+	width: 25%;
+    float: left;
+    margin-top: 2em;
+    margin-left: 1em;
+    margin-bottom: 2em;
+}
+
+
+#content {
+    width: 70%;
+    float: right;
+}

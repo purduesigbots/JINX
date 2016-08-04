@@ -1,0 +1,114 @@
+* {	padding: 0;
+    vertical-align: top;
+    box-sizing: border-box;
+    
+}
+
+body {
+	/*background: url(background.png) repeat-x;*/
+	font: 18px/1.5em "proxima-nova", Helvetica, Arial, sans-serif;
+    background-color: #B7C3F3;
+}
+
+a {	color: #069; }
+a:hover { color: #28b; }
+
+p {
+	margin-top: 10px;
+}
+
+button {
+	font-size: 18px;
+	padding: 1px 7px;
+}
+
+input {
+	font-size: 18px;
+}
+
+input[type=checkbox] {
+	margin: 7px;
+}
+
+/*Narrow Screens*/
+/*@media (max-width: 700)*/
+    #title {
+    	margin-top: 15px;
+    	font: normal 32px "omnes-pro", Helvetica, Arial, sans-serif;
+    	font-size: 42px;
+    	font-weight: bold;
+    	text-decoration: none;
+    	color: #000;
+        background-color: black;
+    }
+
+    #terminalWrap {
+        width: 95%;
+        margin-bottom: 1em;
+    }
+
+    #chartContainer {
+    	width: 95%;
+    }
+
+    .leftFieldsDiv, .rightFieldsDiv {
+        float: left;
+        margin-right: 1em;
+        margin-bottom: 2em;
+    }
+
+    .ySelector, .xSelector {
+        float: left;
+        margin-right: 1em;
+    }
+
+
+/*Normal Screens*/
+@media screen and (min-width: 701px) and (min-device-width: 701px) {
+    #title {
+        float: right;
+        margin-right: 50%;
+        background-color: red;
+    }
+
+    #terminalWrap {
+        float: left;
+    	width: 25%;
+        margin-top: 2em;
+        margin-left: 1em;
+        margin-bottom: 2em;
+    }
+
+    #content {
+        width: 70%;
+        float: right;
+    }
+
+    .rightFieldsDiv {
+        float: right;
+    }
+}
+
+/*Wide Screen*/
+@media screen and (min-width: 1600px) {
+    #title {
+        background-color: blue;
+    }
+
+    #content {
+        width: 70%;
+        float: left;
+        margin-left: 2em;
+    }
+
+    .plotBackground {
+        width: 60%;
+        margin: 1em;
+        float: left;
+    }
+
+    .rightFieldsDiv {
+        float: left;
+    }
+
+}

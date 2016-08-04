@@ -1,0 +1,43 @@
+<!-- Caitlin caitlinkennedy16@gmail.com -->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Flot Examples: Real-time updates</title>
+    <link href="assets/css/exampleflot.css" rel="stylesheet" type="text/css">
+        
+	<script src="assets/javascript/jquery-2.1.4.js"></script>
+    
+    <script src="assets/javascript/flot-flot-958e5fd/jquery.flot.js"></script>
+    <script src="assets/javascript/flot-flot-958e5fd/jquery.flot.time.js"></script>
+    <script src="assets/javascript/grapher.js"></script>
+    
+	<script type="text/javascript">
+        $(document).ready(function() {
+            var numPlotsCreated = 1;
+            newPlot(1);
+                          
+            $('#addPlot').click(function() {
+                numPlotsCreated = numPlotsCreated + 1;
+                newPlot(numPlotsCreated);
+            });
+        });
+    </script>
+</head>
+<body>
+	<div id="header">
+		<h2>Real-time updates</h2>
+	</div>
+
+	<div id="content">
+        <button type="button" id = "addPlot">Add Plot</button>
+        
+		<div class="demo-container" id = "demo-container">
+            
+		</div>
+
+
+
+	</div>
+
+</body>
+</html>

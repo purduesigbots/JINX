@@ -1,0 +1,26 @@
+#title {
+    float: left;
+	margin-top: 15px;
+	font: normal 32px "omnes-pro", Helvetica, Arial, sans-serif;
+	font-size: 42px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #000;
+}
+
+#terminalWrap {
+    width: 95%;
+    float: left;
+    margin-bottom: 1em;
+}
+
+
+#content {
+    width: 95%;
+    float: left;
+}
+
+.chartContainer {
+	width: 95%;
+    margin: auto;
+}

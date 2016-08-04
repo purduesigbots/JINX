@@ -1,0 +1,61 @@
+@CHARSET "UTF-8";
+body {
+	height: 100%;
+}
+
+/*Terminal*/
+.terminal {
+	float: left;
+	position: relative;
+	width: 100%;
+	height: 250px;
+	background-color: white;
+	text-color: black;
+	word-wrap: break-word;
+	border: 2px solid black;
+	border-radius: 8px;
+	overflow: auto;
+}
+
+/*command history table*/
+#commandsTable, #varTable {
+    border: 1px solid black;
+    cellpadding: 10;
+    width: 100%;
+    margin-bottom: 2em;
+}
+
+#prevCommands {
+    margin-bottom: 2em;
+}
+
+.commandsRecord {
+    column-span: 3;
+    border: 1px solid black;
+}
+
+.commandsTime {
+    column-span: 1;
+    border: 1px solid black;
+}
+
+/*Variable value table*/
+.varName {
+    column-span: 1;
+    border: 1px solid black;
+}
+
+.varVal {
+    column-span: 3;
+    border: 1px solid black;
+}
+
+/*Lines in terminal*/
+.robo {
+	background-color: #abcfff;
+}
+
+.command {
+	background-color: silver;
+	border: 1px solid black;
+}

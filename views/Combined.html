@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <title>JINX</title>
+
+    <link href="../assets/css/combined.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/exampleflot.css" rel="stylesheet" type="text/css">
+    <link href="../assets/css/terminal.css" rel="stylesheet" type="text/css">
+    <!--<link href="../assets/css/combinedNormal.css" rel="stylesheet" type="text/css" id="size-stylesheet">-->
+
+    <script src="../assets/javascript/jquery-2.1.4.js"></script>
+
+    <!--Adapts styling to different screen widths-->
+    <!--<script src="../assets/javascript/resolutionAdaptation.js"></script>-->
+
+    <!--Scripts for communicating with data supplier and processing data-->
+    <script src="../assets/javascript/terminalScript.js"></script>
+    <script src="../assets/javascript/talker.js"></script>
+
+    <!--All scripts related to graphing-->
+    <script src="../assets/javascript/flot-flot-958e5fd/jquery.flot.js"></script>
+    <script src="../assets/javascript/flot-flot-958e5fd/jquery.flot.time.js"></script>
+    <script src="../assets/javascript/grapher.js"></script>
+
+    <!--Sets up new graphs-->
+    <script type="text/javascript">
+      $(document).ready(function prepareGraph() {
+          var numPlotsCreated = 0;
+
+          //Should only be triggered once, the first time graphable data is found
+          $("body").one("NewData", function() {
+              numPlotsCreated += 1;
+              newPlot(1);
+              addValueTracker("time", 0);
+          });
+
+          //Create a new plot when button is clicked
+          $('#addPlot').click(function() {
+              numPlotsCreated += 1;
+              newPlot(numPlotsCreated);
+          });
+      });
+</script>
+</head>
+
+<body>
+  <h1 id="title">JINX</h1>
+
+  <!--Holds all text-based containers -->
+  <div id = "terminalWrap">
+
+    <!--Actual terminal where data values are shown and commands input-->
+    <div id = "terminal" class = "terminal">
+    </div>
+    <p></p>
+
+    <!--Submit commands here-->
+    <p>Command:
+        <input id="commandLine" type="text" value="" style="text-align: left; width:100%;" placeholder = "Your command">
+        <button type="button" id = "terminalButton">Submit</button>
+    </p>
+    <button type="button" id = "freezeButton">FREEZE</button>
+
+    <!--Lists all previous commands-->
+    <div id = "prevCommands" class = "terminal">
+        <table id = "commandsTable">
+            <tr>
+                <th class = "commandsRecord"> Command
+                </th>
+                <th class = "commandsTime"> Time
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <!--List most recent variable values-->
+    <div id = "VarVals" class = "terminal">
+        <table id = "varTable">
+            <tr>
+                <th class = "varName"> Variable
+                </th>
+                <th class = "varVal"> Most Recent Value
+                </th>
+            </tr>
+        </table>
+    </div>
+
+    <!--Downloads list of variables and all their values. Each variable gets own row-->
+    <a id="dlVarVals" download="varVals.csv">Download Variable Values</a>
+  </div>
+
+  <!--Holds all graphs-->
+  <div id="content">
+    <button type="button" id = "addPlot">Add Plot</button>
+    <div class="chartContainer" id = "chartContainer">
+    </div>
+  </div>
+</body>
+</html>
