@@ -5,7 +5,7 @@
  * @Date 02 February 2016
  *
  * Creates new plots
- * Allows plotting of specific PID data vs. time
+ * Allows plotting of specific JINX data vs. time
  * Allows user to set time between updates
  * Allows user to choose number of points to plot
  * Allows user to add and remove plots
@@ -16,6 +16,8 @@
  */
 
 //Takes arrays of form [[,],[,]...]
+
+//console.log("In grapher");
 
 function zipArrays(array1, array2, totalPoints) {
 
@@ -163,6 +165,26 @@ function parseYAxisSelections(choosePlotDataID) {
     return ySeriesToPlot;
 }
 
+//Used to display title of Graph
+function toGraphToString(toGraph) {
+    if (toGraph.ySelections.length == 0) {return "nothing";}
+
+    title = toGraph.ySelections[0];
+    $.each(toGraph.ySelections, function(index, ySelection) {
+        if(index == 0) {
+
+        } else {
+            title = title.concat(", ");
+            title = title.concat(ySelection);
+        }
+    });
+
+    title = title.concat(" vs ");
+    title = title.concat(toGraph.xSelection);
+
+    return(title);
+}
+
 function parseXAxisSelection(selectorID) {
     //console.log("Selector ", $("#" + selectorID).val());
     return $("#" + selectorID).val();
@@ -208,14 +230,15 @@ function newPlot(plotNum) {
 
     var choosePlotDataID = "choosePlotData".concat(plotNum);
     var choosePlotDataClass = "choosePlotData";
-    var dataToPlot = graphableData[0]; //represents which y value to plot, given by resArray[dataToPlot]
+    //var dataToPlot = graphableData[0]; //represents which y value to plot, given by resArray[dataToPlot]
 
     var buttonClass = "ChooseData".concat(plotNum);
     var buttonID = [], buttonName = [];
     buttonID[0] = "data0".concat(plotNum), buttonName[0] = "Data Set 0";
     buttonID[1] = "data1".concat(plotNum), buttonName[1] = "Data Set 1";
 
-    localPlotData = getDataSlice(inputPIDVars[dataToPlot], dataToPlot, numDataToPlot);
+    //localPlotData = getDataSlice(inputJINXVars[dataToPlot], dataToPlot, numDataToPlot);
+    localPlotData = [0,0];
 
     // Create html elements for plot
     $("#chartContainer").append($("<div id=" + divID + " class=" + divClass + "></div>")); //container for new plot
@@ -250,7 +273,7 @@ function newPlot(plotNum) {
             }*/
 
         $("#" + rightFieldsDivID).append($(""  //Dropdown list to choose what to plot (Y axis)
-            +"<div class=ySelector id=" + choosePlotDataID + "><p>Y-Axis Selection</p>"
+            +"<div class='ySelector selector' id=" + choosePlotDataID + "><p>Y-Axis Selection</p>"
             // +"<select id=" + choosePlotDataID + " class=" + choosePlotDataClass
             // +" multiple=true>"
             // +"</select>"
@@ -261,7 +284,7 @@ function newPlot(plotNum) {
             }
 
         $("#" + rightFieldsDivID).append($(""  //Dropdown list to choose what to plot (X axis)
-            +"<div class = xSelector><p>X-Axis Selection</p>"
+            +"<div class = 'xSelector selector'><p>X-Axis Selection</p>"
             +"<select id=" + choosePlotDataID + "X class=" + choosePlotDataClass
             +"X>"
             +"</select>"+"</div>"));
@@ -295,7 +318,7 @@ function newPlot(plotNum) {
         +"</button>"));
 
     //Create Plot variable
-    var plot = $.plot("#" + plotID, [localPlotData], {
+    var plot = $.plot("#" + plotID, [0,0], {
         series: {
             shadowSize: 0	// Drawing is faster without shadows
         },
@@ -318,16 +341,22 @@ function newPlot(plotNum) {
 
     //Handle all real-time events
     $(document).ready(function() {
-        //console.log(inputPIDVars);
+        //console.log(inputJINXVars);
         var toGraph = new Object();
         toGraph.xSelection = "time";
 
         //Update list of toGraphYValues when new boxes are checked
-        $("." + buttonClass).click(function () {
+        function ySelectorChosen() {
             toGraph.ySelections = parseYAxisSelections(choosePlotDataID);
             //console.log(toGraph.yValues);
             //console.log("register click");
-            //document.getElementById(headerID).innerHTML = headerText + " " + dataToPlot;
+
+            //Update title of graph
+            document.getElementById(headerID).innerHTML = headerText + " " + toGraphToString(toGraph);
+        }
+
+        $("." + buttonClass).click(function () {
+            ySelectorChosen();
         });
 
         //Update x axis selection
@@ -336,15 +365,18 @@ function newPlot(plotNum) {
             if (toGraph.xSelection == "time") {
                 plot.getOptions().xaxes[1].show = false;
                 plot.getOptions().xaxes[0].show = true;
-                console.log("Chose to show time");
+                //console.log("Chose to show time");
             } else {
                 plot.getOptions().xaxes[0].show = false;
                 plot.getOptions().xaxes[1].show = true;
-                console.log("Choose to show numbers");
+                //console.log("Choose to show numbers");
             }
             plot.setupGrid();
             plot.draw();
-            console.log("X mode", plot.getAxes());
+            //console.log("X mode", plot.getAxes());
+
+            //Update title of graph
+            document.getElementById(headerID).innerHTML = headerText + " " + toGraphToString(toGraph);
         });
 
         //Change how often singular plot is updated
@@ -375,10 +407,7 @@ function newPlot(plotNum) {
 
             //Update list of toGraphYValues when new boxes are checked
             $("." + buttonClass).click(function () {
-                toGraph.ySelections = parseYAxisSelections(choosePlotDataID);
-                console.log((toGraphYValues));
-                console.log("register click");
-                //document.getElementById(headerID).innerHTML = headerText + " " + dataToPlot;
+                ySelectorChosen();
             });
 
             //X axis
@@ -391,7 +420,7 @@ function newPlot(plotNum) {
 
         //Update the graph. Bring in new data points, reset axes, call itself
         function update() {
-            localPlotData = getDataSlice(inputPIDVars, toGraph, numDataToPlot);
+            localPlotData = getDataSlice(inputJINXVars, toGraph, numDataToPlot);
             //console.log(localPlotData);
             plot.setData(localPlotData);
             //plot.setData[i,i];

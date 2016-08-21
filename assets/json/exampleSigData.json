@@ -1,159 +1,159 @@
 [
   {
-    "PID": {
-      "Error": 3,
+    "JINX": {
+      "Error": "3",
       "Command_Value": 24,
       "string": "This is string 1.",
       "MID": 1443388012
     }
   },
   {
-    "PID": {
-      "Error": 1,
+    "JINX": {
+      "Error": "1",
       "Command_Value": 20,
       "string": "This is sentence 2.",
       "MID": 11443388012
     }
   },
   {
-    "PID": {
-      "Error": 7,
+    "JINX": {
+      "Error": "7",
       "Command_Value": 34,
       "string": "This is the third example.",
       "MID": 21443388012
     }
   },
   {
-    "PID": {
-      "Error": 7,
+    "JINX": {
+      "Error": "7",
       "Command_Value": 27,
       "string": "blue is a color",
       "MID": 31443388012
     }
   },
   {
-    "PID": {
-      "Error": 9,
+    "JINX": {
+      "Error": "9",
       "Command_Value": 40,
       "string": "brown is also a color",
       "MID": 41443388012
     }
   },
   {
-    "PID": {
-      "Error": 0,
+    "JINX": {
+      "Error": "0",
       "Command_Value": 29,
       "string": "We are starting to repeat examples.",
       "MID": 51443388012
     }
   },
   {
-    "PID": {
-      "Error": 4,
+    "JINX": {
+      "Error": "4",
       "Command_Value": 40,
       "string": "green is a color between blue and yellow",
       "MID": 61443388012
     }
   },
   {
-    "PID": {
-      "Error": 7,
+    "JINX": {
+      "Error": "7",
       "Command_Value": 32,
       "string": "I don't know art",
       "MID": 71443388012
     }
   },
   {
-    "PID": {
-      "Error": 8,
+    "JINX": {
+      "Error": "8",
       "Command_Value": 22,
       "string": "This is almost the end.",
       "MID": 81443388012
     }
   },
   {
-    "PID": {
-      "Error": 10,
+    "JINX": {
+      "Error": "10",
       "Command_Value": 21,
       "string": "This is the end.",
       "MID": 91443388012
     }
   }
 {
-    "PID": {
-      "Error": 3,
+    "JINX": {
+      "Error": "3",
       "Command_Value": 24,
       "string": "This is string 1.",
       "MID": 1443388012
     }
   },
   {
-    "PID": {
-      "Error": -1,
+    "JINX": {
+      "Error": "-1",
       "Command_Value": -20,
       "string": "This is sentence 2.",
       "MID": 11443388012
     }
   },
   {
-    "PID": {
-      "Error": -7,
+    "JINX": {
+      "Error": "-7",
       "Command_Value": -34,
       "string": "This is the third example.",
       "MID": 21443388012
     }
   },
   {
-    "PID": {
-      "Error": -7,
+    "JINX": {
+      "Error": "-7",
       "Command_Value": -27,
       "string": "blue is a color",
       "MID": 31443388012
     }
   },
   {
-    "PID": {
-      "Error": -9,
+    "JINX": {
+      "Error": "-9",
       "Command_Value": -40,
       "string": "brown is also a color",
       "MID": 41443388012
     }
   },
   {
-    "PID": {
-      "Error": 0,
+    "JINX": {
+      "Error": "0",
       "Command_Value": -29,
       "string": "We are starting to repeat examples.",
       "MID": 51443388012
     }
   },
   {
-    "PID": {
-      "Error": -4,
+    "JINX": {
+      "Error": "-4",
       "Command_Value": -40,
       "string": "green is a color between blue and yellow",
       "MID": 61443388012
     }
   },
   {
-    "PID": {
-      "Error": -7,
+    "JINX": {
+      "Error": "-7",
       "Command_Value": -32,
       "string": "I don't know art",
       "MID": 71443388012
     }
   },
   {
-    "PID": {
-      "Error": -8,
+    "JINX": {
+      "Error": "-8",
       "Command_Value": -22,
       "string": "This is almost the end.",
       "MID": 81443388012
     }
   },
   {
-    "PID": {
-      "Error": -10,
+    "JINX": {
+      "Error": "-10",
       "Command_Value": -21,
       "string": "This is the end.",
       "MID": 91443388012

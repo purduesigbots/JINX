@@ -1,8 +1,11 @@
-var inputPIDVars = {'time' : []};
+var inputJINXVars = {'time' : []};
 var graphableData = ['time'];
 var stopThings = false;
 
 $(document).ready(function() {
+    var numDataRecieved = 0;
+    //console.log("In talker");
+
     var graphableDataEvent = jQuery.Event("NewData");
     var graphDataEvent = jQuery.Event("GraphData");
 
@@ -13,7 +16,7 @@ $(document).ready(function() {
         cache: false
     });
 
-
+    //Redundant variable to ensure no duplicate JINX data is recieved
     var timestamp = 0									//used to detect when file was updated*/
     var objDiv = document.getElementById("terminal");	//used to scroll to bottom of terminal
     //var evtSource = new EventSource(eventSourceAddress);	//server side events
@@ -22,9 +25,9 @@ $(document).ready(function() {
     evtSource.addEventListener("ping", function(e) {
         if(!stopThings){
             var obj = JSON.parse(e.data);
-            //newElement.innerHTML = "SSE: " + obj.PID;
-            addTerminal(obj.PID.time, "robo", objDiv);
-            addTerminal(obj.PID.Error, "robo", objDiv);
+            //newElement.innerHTML = "SSE: " + obj.JINX;
+            addTerminal(obj.JINX.time, "robo", objDiv);
+            addTerminal(obj.JINX.Error, "robo", objDiv);
 
         }
     }, false);
@@ -50,28 +53,37 @@ $(document).ready(function() {
 
     //get the newest json data and parse it if the timestamp has changed
     function getJSON(){
-        $.getJSON(jsonAddress, function(data) {
-            if(data.PID.MID != timestamp) {
-                  handlePIDData(data.PID);
+        $.post(jsonAddress, {recieved: "".concat(numDataRecieved)}, function(data) {
+            //console.log(data);
+            if(data.JINX.MID != timestamp) {
+                  numDataRecieved = numDataRecieved + 1;
+                  handleJINXData(data.JINX);
             }
         });
     }
 
-    function handlePIDData(PID) {
-        timestamp = PID.MID;
+    function isNumeric(data) {
+        //console.log(parseFloat(data) == NaN, parseFloat(data));
+    }
+    function handleJINXData(JINX) {
+        timestamp = JINX.MID;
         time = new Date().getTime();
-        if (PID.time) {
-            time = PID.time;
+        if (JINX.time) {
+            time = JINX.time;
         }
 
-        for (PIDVar in PID) {
-            if(!(PIDVar in inputPIDVars)) {//If the variable hasn't been seen yet
-                inputPIDVars[PIDVar] = new Object();
-                inputPIDVars[PIDVar].time = [];  //Create an array to store its future data
-                inputPIDVars[PIDVar].value = [];
-                if (jQuery.type(PID[PIDVar]) == "number") { //if the data is numeric
-                    graphableData.push(PIDVar);  //lable it as something to be graphed
-                    addValueTracker(PIDVar, PID[PIDVar]);
+        for (JINXVar in JINX) {
+            if(!(JINXVar in inputJINXVars)) {//If the variable hasn't been seen yet
+                inputJINXVars[JINXVar] = new Object();
+                inputJINXVars[JINXVar].time = [];  //Create an array to store its future data
+                inputJINXVars[JINXVar].value = [];
+
+                //console.log(JINX[JINXVar]);
+                isNumeric(JINX[JINXVar]);
+
+                if (!isNaN(JINX[JINXVar])) { //if the data is numeric
+                    graphableData.push(JINXVar);  //lable it as something to be graphed
+                    addValueTracker(JINXVar, JINX[JINXVar]);
                     jQuery("body").trigger(graphableDataEvent);//Let everything know there is new graphable data
                 }
                 //console.log(graphableData);
@@ -79,19 +91,19 @@ $(document).ready(function() {
             }
 
             if (!stopThings) {  //stopThings set by Freeze button
-                if (graphableData.indexOf(PIDVar) > -1) {//If there is new data to graph, graph it
+                if (graphableData.indexOf(JINXVar) > -1) {//If there is new data to graph, graph it
                     jQuery("body").trigger(graphDataEvent);
-                    updateValueTracker(PIDVar, PID[PIDVar]);//TODO: Update variable table
+                    updateValueTracker(JINXVar, JINX[JINXVar]);//TODO: Update variable table
                 } else {  //Otherwise print it to the terminal
-                    addTerminal(PIDVar + ": " + PID[PIDVar], "robo", objDiv);
+                    addTerminal(JINXVar + ": " + JINX[JINXVar], "robo", objDiv);
                 }
             }
 
             //Assosiate a time with each variable, since not all variables always come in together
-            inputPIDVars[PIDVar].time.push(time);
-            inputPIDVars[PIDVar].value.push(PID[PIDVar]);
-            //console.log(inputPIDVars[PIDVar]);
-            //console.log(inputPIDVars);
+            inputJINXVars[JINXVar].time.push(time);
+            inputJINXVars[JINXVar].value.push(JINX[JINXVar]);
+            //console.log(inputJINXVars[JINXVar]);
+            //console.log(inputJINXVars);
         }
 
         updateValueTracker("time", time);

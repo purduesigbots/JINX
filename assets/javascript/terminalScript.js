@@ -4,22 +4,29 @@ var upArrow = 38;
 var downArrow = 40;
 var enterKey = 13;
 var commandArrayIndex = 0;     //Keeps track of where in command history you are
+var commandAddress = "../assets/python3/command.py";
 
 function addTerminal(line, Class, terminalObject) {	//append text to the terminal
     var time = new Date();
     var formatTime = time.getMinutes() + ":" + time.getSeconds();//Assume only minutes and seconds matter
     //console.log(formatTime);                              //milliseconds may have to be added at a later date
 
-    var scrollToBottom = (terminalObject.scrollHeight - terminalObject.scrollTop <= 325);
+    var shouldScrollToBottom = (terminalObject.scrollHeight - terminalObject.scrollTop <= 325);
     $("#terminal").append($("<div class = " + Class + ">" + formatTime + "$ " + line + "</div>"));	//Insert text into terminal
-    if (scrollToBottom) {  //If already near bottom of div before adding text to terminal
+    if (shouldScrollToBottom) {  //If already near bottom of div before adding text to terminal
         terminalObject.scrollTop = terminalObject.scrollHeight;	//Scroll to bottom of div
     }
 }
 
+function postCommand(command) { //POST Command to server
+    $.post(commandAddress, {command: "".concat(command)}, function(data) {
+        console.log(data);
+    });
+}
+
 function addCommandHistory(command) {
-    var time = new Date();
-    var formatTime = time.getMinutes() + ":" + time.getSeconds();//Assume only minutes and seconds matter
+    var date = new Date();
+    var formatTime = date.getMinutes() + ":" + date.getSeconds();//Assume only minutes and seconds matter
     //console.log(formatTime);                              //milliseconds may have to be added at a later date
 
     var leftTD = "<td class = commandsRecord>" + command + "</td>";
@@ -32,7 +39,8 @@ function addCommandHistory(command) {
 }
 
 function submitTerminal(terminalObject) {	//Submits command to terminal from input line
-    addTerminal(commandInput, "command", terminalObject)
+    addTerminal(commandInput, "command", terminalObject);
+    postCommand(commandInput);
 
     //arrayOfCommands = arrayOfCommands.reverse();
     //arrayOfCommands[arrayOfCommands.length - 1] = commandInput;
@@ -79,10 +87,14 @@ function updateValueTracker(varName, varVal) {
 function downloadVarVals() {
     //var downloadWindow = window.open("", "downloadWindow");
     var toWrite = "";
-    $.each(inputPIDVars, function(key, value) {
-        toWrite = toWrite + key;
-        $.each(value, function() {
-            toWrite = toWrite + "," + this[1];
+    $.each(inputJINXVars, function(key, value) {
+        if (key == "time") {
+            //continue
+            return 0;
+        }
+        toWrite = toWrite + key
+        $.each(value.value, function() {
+            toWrite = toWrite + "," + this;
         })
         toWrite = toWrite + "\r\n"
         //downloadWindow.document.write("<p>" + toWrite + "</p>");
@@ -139,4 +151,5 @@ $(document).ready(function(){
     });
 
     document.getElementById("dlVarVals").addEventListener("mouseover", downloadVarVals);
+    document.getElementById("dlVarVals").addEventListener("click", downloadVarVals);
 });
