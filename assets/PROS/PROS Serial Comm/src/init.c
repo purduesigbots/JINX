@@ -39,8 +39,7 @@ void initializeIO() {
  */
 void initialize() {
     initJINX(stdout);
-    delay(20);
-    delay(20);
+    delay(100);
     taskCreate(JINXRun, TASK_DEFAULT_STACK_SIZE, NULL, (TASK_PRIORITY_DEFAULT + 1));
-	delay(20);
+	delay(100);
 }

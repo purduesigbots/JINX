@@ -61,8 +61,7 @@ $(document).ready(function() {
                   numDatareceived = numDatareceived + 1;
                   handleJINXData(data.JINX);
             }
-        });
-        jQuery("body").trigger(finishedPostEvent);
+        }).always(jQuery("body").trigger(finishedPostEvent));
     }
 
     function isNumeric(data) {
@@ -116,6 +115,6 @@ $(document).ready(function() {
     setTimeout(getJSON, 50);
     $("body").on("FinishedPost", function() {
         //console.log("Worked?");
-        setTimeout(getJSON, 50);
+        setTimeout(getJSON, 500);
     });
 });
