@@ -63,6 +63,9 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
         self.send_header('Content-type', mimetype)
         self.end_headers()
         self.wfile.write(response)
+        
+        #DEBUG: Confirm response sent
+        print("Sent 200-OK response:", mimetype, response.decode('utf-8'))
 
     '''
         Response: String to send over HTML/1.1
@@ -75,30 +78,53 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
         Handle post requests
     '''
     def do_POST(self):
+        #Get all posted data
+        length = int(self.headers['Content-Length'])
+        post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
+        
+        #Check the file extension required and
+        #set the right mime type
+        mimetype, sendReply = self.getMimetype(self.path)
+        response = None
+        
+        #DEBUG: Confirm posted command
+        print("Post data:", post_data,"\n")
 
         #If main directory requested, return main GUI
-        if self.path=="/":
+        if(self.path=="/"):
             self.path="/views/Combined.html"
+            mimetype = 'text/html'
+            sendReply = True
 
         #If command is sent, send to main module to send to cortex
-        elif (self.path.endswith("command.py")):
-            length = int(self.headers['Content-Length'])
-            post_data = urllib.parse.parse_qs(self.rfile.read(length).decode('utf-8'))
-
-            #DEBUG: Confirm posted command
-            print("Post data:", post_data,"\n")
-
+        elif(self.path.endswith("command.py")):
+            #DEBUG: Confirm command received
+            print("Command Received")
+            
             #Send command to cortex
             comm = post_data['command'][0]
-            response = magicGlobalDict["JINX_Controller"].writeSerial(comm)
-            
+            response = str(magicGlobalDict["JINX_Controller"].writeSerial(comm))
+            response = self.prepareResponse(response)
+            sendReply = True
+        
+        #If GUI is requesting new data and we are talking to cortex
+        elif(self.path.endswith("jason.json") and magicGlobalDict["JINX_Controller"]):
+             received = int(post_data['received'][0])
+             
+             #DEBUG: Confirm data query received
+             print("Data Received:", received)
+             
+             response = str(magicGlobalDict["JINX_Controller"].getJSONData(received))
+             response = self.prepareResponse(response)
+             
+             #DEBUG: Confirm proper response
+             print("Data Response:", response.decode('utf-8'))
+             sendReply = True
+        
         try:
-            #Check the file extension required and
-            #set the right mime type
-            mimetype, sendReply = self.getMimetype(self.path)
-            
             if(sendReply == True):
-                response = self.getStaticFile()
+                if (not response):
+                    response = self.getStaticFile()
                 self.send200Response(mimetype, response)
 
         except IOError:
@@ -201,7 +227,7 @@ if (__name__=="__main__"):
     #print(threading.enumerate())
 
     while(input("Enter q to quit: ") != "q"):
-        time.delay(1)
+        time.sleep(1)
 
     #print("?")
     serv.shutDown()

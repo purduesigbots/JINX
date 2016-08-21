@@ -3,9 +3,10 @@ var graphableData = ['time'];
 var stopThings = false;
 
 $(document).ready(function() {
-    var numDataRecieved = 0;
+    var numDatareceived = 0;
     //console.log("In talker");
 
+    var finishedPostEvent = jQuery.Event("FinishedPost");
     var graphableDataEvent = jQuery.Event("NewData");
     var graphDataEvent = jQuery.Event("GraphData");
 
@@ -16,7 +17,7 @@ $(document).ready(function() {
         cache: false
     });
 
-    //Redundant variable to ensure no duplicate JINX data is recieved
+    //Redundant variable to ensure no duplicate JINX data is received
     var timestamp = 0									//used to detect when file was updated*/
     var objDiv = document.getElementById("terminal");	//used to scroll to bottom of terminal
     //var evtSource = new EventSource(eventSourceAddress);	//server side events
@@ -53,13 +54,15 @@ $(document).ready(function() {
 
     //get the newest json data and parse it if the timestamp has changed
     function getJSON(){
-        $.post(jsonAddress, {recieved: "".concat(numDataRecieved)}, function(data) {
+        //console.log("received: ", "".concat(numDatareceived));
+        $.post(jsonAddress, {received: "".concat(numDatareceived)}, function(data) {
             //console.log(data);
             if(data.JINX.MID != timestamp) {
-                  numDataRecieved = numDataRecieved + 1;
+                  numDatareceived = numDatareceived + 1;
                   handleJINXData(data.JINX);
             }
         });
+        jQuery("body").trigger(finishedPostEvent);
     }
 
     function isNumeric(data) {
@@ -109,9 +112,10 @@ $(document).ready(function() {
         updateValueTracker("time", time);
     }
 
-    placeholder()
-    function placeholder(){
-        getJSON();
-        setTimeout(placeholder, 1000);	//REMOVE used to append random data to terminal
-    }
+    //Start Getting JSON, then keep asking after response or timeout
+    setTimeout(getJSON, 50);
+    $("body").on("FinishedPost", function() {
+        //console.log("Worked?");
+        setTimeout(getJSON, 50);
+    });
 });

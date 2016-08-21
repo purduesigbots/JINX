@@ -16,6 +16,11 @@ class MissingTalkerError(NameError):
 class JINX_Data():
 
     '''
+        Class variable: unique id for each dataset created
+    '''
+    MID = 0
+
+    '''
         Name: name of JSON data
         Value: Value of JSON data
         Incoming data is not vetted for illegal characters, such as ' " '
@@ -23,12 +28,17 @@ class JINX_Data():
     def __init__(self, name, value):
         self.name = name
         self.value = value
+        self.mid = JINX_Data.MID
+        JINX_Data.MID += 1
 
     '''
         Return string representation of JSON-formatted name/value data
     '''
     def getJSON(self):
-        JSON = '"JINX": {"%s": "%s"}' %(self.name, str(self.value))
+        JSON = '{"JINX": {'
+        JSON += '"%s": "%s"' %(self.name, str(self.value))
+        JSON += ',"MID": "%s"' %(self.mid)
+        JSON += '}}'
         return JSON
 
     '''
@@ -70,6 +80,9 @@ class JINX_Controller():
     '''
     def addJSONData(self, data):
         self.JSONData.append(data)
+        #DEBUG: Confrim data added. Warning: Gets big
+        #print("Data Added:", data, [str(x) for x in self.JSONData][-20:])
+    
 
     '''
         Message: Stripped message from cortex
@@ -105,8 +118,10 @@ class JINX_Controller():
     def getJSONData(self, dataNum):
         #wait until there is data to send
         while(dataNum >= len(self.JSONData)):
-            time.delay(0.5)
+            time.sleep(0.5)
 
+        #DEBUG: Confirm data returned
+        print("New JSON Data:", self.JSONData[dataNum], dataNum)
         return self.JSONData[dataNum]
 
     '''
@@ -135,7 +150,7 @@ controller = JINX_Controller()
 
 #Communicate with cortex
 serialTalker = serialReadWrite.JINX_Serial(controller)
-serialThread = threading.Thread(target=serialTalker.run, args=(controller,), name = "Joe")
+serialThread = threading.Thread(target=serialTalker.run, args=(), name = "Joe")
 serialThread.start()
 
 #Communicate with browser/GUI
