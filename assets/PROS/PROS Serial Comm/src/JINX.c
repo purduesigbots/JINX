@@ -37,15 +37,26 @@ char * getMessage(char* JINXMessage) {
 //NOTE: Because vfprintf is not implemented in PROS, I am not allowing
 //Variable length arguments/string formatting in this method.
 //Strings must be formatted with sprintf or like before being passed as the message
-void writeJINXMessage(char* message) {
+void writeSerial(char* message) {
     fprintf(comPort, "%s%s%s%s", JINX_HEADER, JINX_DELIMETER, message, JINX_TERMINATOR);
     fflush(comPort);
 }
 
+//Wrapper function for sendData to send non-numeric data more easily
+void writeJINXMessage(char* message) {
+    char msg[4] = "msg";
+    sendData(msg, message);
+}
+
 void sendData(char* name, char* value) {
-    char message[50];
+    // if (strlen(name) + strlen(value) >= MAX_MESSAGE_SIZE + PROTOCOL_SIZE) {
+    //     fprintf(comPort, "Warning: Tried to send too large a message named %s", name);
+    //     return;
+    // }
+
+    char message[100];
     sprintf(message, "%s%s%s", name, JINX_DELIMETER, value);
-    writeJINXMessage(message);
+    writeSerial(message);
 }
 
 int readLine(FILE* port, char* string) {
@@ -70,15 +81,15 @@ void parseMessage(char* message) {
 }
 
 void JINXRun(void* ignore) {
-	int error, time, command, charsWrit, string;
+	//int error, time, command, charsWrit, string;
 	int del = 500;
 	//int inInt;
-	char inStr[50];
+	char inStr[100];
 	//char * inStrPtr = inStr;
-	time = millis();
+	//time = millis();
 
 	delay(1000);
-	usartInit(uart1, 115200, SERIAL_8N1);
+	//usartInit(uart1, 115200, SERIAL_8N1);
 
 	//if(false)
 	while (true) {

@@ -40,5 +40,6 @@ void operatorControl() {
         }
         sprintf(messStr, "%d", messInt++);
         sendData("TestData", messStr);
+        printf("test\n");
 	}
 }

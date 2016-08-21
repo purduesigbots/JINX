@@ -10,8 +10,12 @@
 #define JINX_DELIMETER "_"
 #define JINX_TERMINATOR "\r\n"
 
-//Functions
+//#define MAX_MESSAGE_SIZE 100
+//#define PROTOCOL_SIZE 10
+// #define PROTOCOL_SIZE (strlen(JINX_HEADER) + strlen(JINX_DELIMETER) \
+//     + strlen(JINX_TERMINATOR))
 
+//Functions
 /**
  *port: which port to accept communications from. Should be UART1, UART2, or stdout/in
  */
@@ -26,6 +30,16 @@ bool setComPort(FILE* port);
 
 /**
  *message: raw string to send. Don't pass newlines.
+ *
+ *Formats outgoing message to fulfil JINX Protocol
+ */
+void writeSerial(char* message);
+
+/**
+ *message: raw string to send. Don't pass newlines.
+ *
+ *Calls sendData with name "msg" and value message
+ *Just a convinience to make it easy to send raw strings to GUI
  */
 void writeJINXMessage(char* message);
 
