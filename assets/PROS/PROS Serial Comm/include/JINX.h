@@ -32,6 +32,10 @@ bool setComPort(FILE* port);
  *message: raw string to send. Don't pass newlines.
  *
  *Formats outgoing message to fulfil JINX Protocol
+ *
+ *NOTE: Because vfprintf is not implemented in PROS, I am not allowing
+ *Variable length arguments/string formatting in this method.
+ *Strings must be formatted with sprintf or like before being passed as the message
  */
 void writeSerial(char* message);
 
@@ -44,13 +48,14 @@ void writeSerial(char* message);
 void writeJINXMessage(char* message);
 
 /**
- *port: which port to accept communications from. Should be UART1, UART2, or stdout/in
- *string: String to copy line into
+ *stringBuffer: String to copy line into
  *
  *Blocks until done
  *terminator is "/n"
+ *
+ *TODO: Set maximum message size to prevent buffer overflow.
  */
-int readLine(FILE* port, char* string);
+int readLine(char* stringBuffer);
 
 /**
  *message: message recieved from comPort

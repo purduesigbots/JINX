@@ -1,29 +1,55 @@
 #include "main.h"
 #include "JINX.h"
 
-#define DEBUG_JINX false
+#define DEBUG_JINX true
 
+//Port over which all serial communication will occur. STDIN == STDOUT, so either can be used
 static FILE* comPort = stdout;
-//static char unused;
+
+//*************This space reserved for user-defined functions***************
+    //Example of user defined JINX helper function.
+    //Since it is at the top of this file, it can be called from anywhere else in this file.
+    //Good practice is to put its prototype in JINX.h, though.
+    void handleGet() {
+        char message[100];
+        parseMessage(message);
+        if (strcmp(message, "DEBUG_JINX") == 0) {
+            //Stringify DEBUG_JINX. I think.
+            //TODO: Make sure this works
+
+            sprintf(message, "%s, %d", message, DEBUG_JINX);
+        } else {
+            strcat(message, " was unable to be gotten.");
+        }
+
+        writeJINXMessage(message);
+    }
+//**************************************************************************
 
 void initJINX(FILE* port) {
+    //If the port is not a valid communications port, inform user of error
     if (!setComPort(port)) {
         //Would print to stderr, but not set for PROS
         printf("Invalid Port specified for JINX communications\n");
+
+        //Optionally allow user to fail on error. Not recommended
         //exit(EXIT_FAILURE);
     }
 }
 
-bool setComPort(FILE * port) {
+bool setComPort(FILE* port) {
+    //If the port is either of the UARTs, set up the pins correctly for serial data
     if (port == uart1 || port == uart2) {
         usartInit(port, 115200, SERIAL_8N1);
         return true;
+
+    //Port is set to STDOUT by default, but still allow users to specify it if they wish.
     } else if (port == stdout) {
         return true;
     }
 
     #if(DEBUG_JINX)
-            printf("failed to open port %d for JINX\n", port);
+            printf("Failed to open specified port for JINX (setComPort(FILE* port))\n");
     #endif
 
     return false;
@@ -34,9 +60,7 @@ char * getMessage(char* JINXMessage) {
     return NULL;
 }
 
-//NOTE: Because vfprintf is not implemented in PROS, I am not allowing
-//Variable length arguments/string formatting in this method.
-//Strings must be formatted with sprintf or like before being passed as the message
+
 void writeSerial(char* message) {
     fprintf(comPort, "%s%s%s%s", JINX_HEADER, JINX_DELIMETER, message, JINX_TERMINATOR);
     fflush(comPort);
@@ -59,66 +83,63 @@ void sendData(char* name, char* value) {
     writeSerial(message);
 }
 
-int readLine(FILE* port, char* string) {
+int readLine(char* stringBuffer) {
+
+    //Terminating character to specify end of line/message
     char term = '\n';
+
+    //Single character read in
     char get;
-    int count = 0;
 
-    string[0] = '\0';
+    //How many characters read in/Index of stringBuffer to write to
+    int bufferIndex = 0;
 
-    get = fgetc(port);
+    //Get character from serial. If first character is terminator, quit immediately
+    get = fgetc(comPort);
     while(get != term) {
-        string[count++] = get;
-        get = fgetc(port);
+        stringBuffer[bufferIndex++] = get;
+        get = fgetc(comPort);
     }
-    string[count] = '\0';
-    return count;
-}
 
+    //Terminate string with null character (Is that the term?)
+    //This means that if only a terminator is read, string is only an endstring (Sounds silly, but oh well)
+    stringBuffer[bufferIndex] = '\0';
+
+    //Return size of new string
+    return bufferIndex;
+}
 
 void parseMessage(char* message) {
     writeJINXMessage(message);
+
+    //Example parse. User can should replace with own body.
+    if (strcmp(message, "Option 1") == 0) {
+        //Do option 1
+        writeJINXMessage("Option 1 chosen.");
+    } else if(strcmp(message, "get") == 0) {
+        //Call another function to handle "get"
+        handleGet();
+    } else {
+        //Do default
+        writeJINXMessage("No comparison found");
+    }
 }
 
 void JINXRun(void* ignore) {
-	//int error, time, command, charsWrit, string;
 	int del = 500;
-	//int inInt;
 	char inStr[100];
-	//char * inStrPtr = inStr;
-	//time = millis();
 
+    //Delay a second to allow time for communication to open up
 	delay(1000);
-	//usartInit(uart1, 115200, SERIAL_8N1);
 
-	//if(false)
 	while (true) {
+#if DEBUG_JINX
         writeJINXMessage("Should wait for new string");
-        readLine(comPort, inStr);
+#endif
+
+        //Get message, save in inStr, then parse.
+        readLine(inStr);
         parseMessage(inStr);
-
-
-		//delay(10000);
-		//scan(inStr, 10);
-
-		//fprintf(33, "TEST 2");
-		// command = joystickGetDigital(1,1,1);
-		// error = joystickGetAnalog(1,1);
-		// string = joystickGetAnalog(1,3);
-		//printf("{\"PID\": {\"Error\": %d,\"Command_Value\": %d,\"string\": \"%d\",\"time\": %d}}\n", error, command, string, time);
-		//charsWrit = fprintf(uart1,
-		//				"{\"PID\": {\"Error\": %d,\"Command_Value\": %d,\"string\": \"%d\",\"time\": %d}}\n",
-		//				error, string, string, time);
-		//printf(("{\"JINX\": {\"Error\": %d,\"Command_Value\": %d,\"string\": \"%d\",\"time\": %d}}\n\r",
-		//		error, string, string, time));
-		//printf("%d\n", charsWrit);
-        //fprintf(stdout, "%d\n", charsWrit);
-        //writeJINXMessage(("Good Message d"));
-        //printf("Bad Begin %s", JINX_TERMINATOR);
-        //printf("%s Bad End", JINX_HEADER);
-		//time = millis();
-
-
 		delay(del);
 	}
 
