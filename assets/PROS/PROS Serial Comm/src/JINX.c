@@ -1,3 +1,15 @@
+/**
+ *JINX.c
+ *
+ *Put this file in your src folder, and JINX.h in your include folder
+ *Include JINX.h in your main.h
+ *Call initJINX() and create start JINXRun in its own task in initialize()
+ *
+ *User should replace body of parseMessage() with their own parser
+ *They may of course create helper functions to call, if they desire.
+ *An example helper function is defined in the space below
+ */
+
 #include "main.h"
 #include "JINX.h"
 
