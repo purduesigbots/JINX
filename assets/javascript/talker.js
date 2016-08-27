@@ -54,19 +54,20 @@ $(document).ready(function() {
 
     //get the newest json data and parse it if the timestamp has changed
     function getJSON(){
+        console.log("Asked to get JSON");
         //console.log("received: ", "".concat(numDatareceived));
-        $.post(jsonAddress, {received: "".concat(numDatareceived)}, function(data) {
-            //console.log(data);
-            if(data.JINX.MID != timestamp) {
-                  numDatareceived = numDatareceived + 1;
-                  handleJINXData(data.JINX);
-            }
-        }).always(jQuery("body").trigger(finishedPostEvent));
+        $.post(
+            jsonAddress,
+            {received: "".concat(numDatareceived)},
+            function(data) {
+                console.log("JINX Data", data.JINX);
+                if(data.JINX.MID != timestamp) {
+                      numDatareceived = numDatareceived + 1;
+                      handleJINXData(data.JINX);
+                }
+            }, "json");
     }
 
-    function isNumeric(data) {
-        //console.log(parseFloat(data) == NaN, parseFloat(data));
-    }
     function handleJINXData(JINX) {
         timestamp = JINX.MID;
         time = new Date().getTime();
@@ -81,7 +82,7 @@ $(document).ready(function() {
                 inputJINXVars[JINXVar].value = [];
 
                 //console.log(JINX[JINXVar]);
-                isNumeric(JINX[JINXVar]);
+                //isNumeric(JINX[JINXVar]);
 
                 if (!isNaN(JINX[JINXVar])) { //if the data is numeric
                     graphableData.push(JINXVar);  //lable it as something to be graphed
@@ -109,12 +110,17 @@ $(document).ready(function() {
         }
 
         updateValueTracker("time", time);
+        console.log("Finished parsing JSON");
+        setTimeout(getJSON, 50);
+        console.log("Set timeout to get more data");
     }
 
-    //Start Getting JSON, then keep asking after response or timeout
-    setTimeout(getJSON, 50);
-    $("body").on("FinishedPost", function() {
-        //console.log("Worked?");
-        setTimeout(getJSON, 500);
-    });
+    //Ask for JINX Data once every 10 seconds in case of timeout
+    function backupRequester() {
+        getJSON();
+        setTimeout(backupRequester, 10000);
+    }
+
+    backupRequester();
+
 });

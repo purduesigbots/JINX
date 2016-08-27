@@ -36,6 +36,37 @@ static FILE* comPort = stdout;
 
         writeJINXMessage(message);
     }
+
+    //Returns integer parsed from character buffer
+    int parseInt(char* intString) {
+        char digit;
+
+        //Limit to 32 digit integer. Please don't send 32 digit integers
+        char tempStr[33] = "";
+
+        int len = strlen(intString);
+
+        //Catch empty string
+        if (len == 0) {
+            char errorMessage[100];
+            sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
+            sendData("Error", errorMessage);
+        }
+
+        for(int i = 0; i < len; i++) {
+            digit = intString[i];
+            if ((digit < '0') || (digit > '9')) {
+                char errorMessage[100];
+                sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
+                sendData("Error", errorMessage);
+                return -1;
+            }
+
+            tempStr[i] = digit;
+        }
+
+        return atoi(tempStr);
+    }
 //**************************************************************************
 
 void initJINX(FILE* port) {

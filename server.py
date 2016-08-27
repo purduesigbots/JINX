@@ -121,16 +121,24 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
              print("Data Response:", response.decode('utf-8'))
              sendReply = True
         
+        #If request is not one of above, or server is running without a working controller
         try:
-            if(sendReply == True):
+            if(sendReply):
+            
+                #If a response has not already been created
                 if (not response):
+                
+                    #Read data from file and convert to bytes
                     response = self.getStaticFile()
+                
+                #Release response to server
                 self.send200Response(mimetype, response)
 
         except IOError:
             #DEBUG: Confirm path
             print(self.requestPath)
             self.send_error(404,'File Not Found: %s' % self.path)
+
       
 '''
     CLASS: Control browser communications
@@ -195,11 +203,11 @@ class JINX_Server():
         #Non-threaded server
         #self.httpd = HTTPServer(server_address_port, JINX_HTTP_ServerRequestHandler)
 
-
-        #TODO: Finish commenting
+        #Supposed to allow port to be immediately reused by another application after this one ends
         self.httpd.allow_reuse_address = True
+        
+        #DEBUG: Confirm server startup
         print('running server...')
-        #print(self.httpd)
     
         try:
             while(not self.closed):

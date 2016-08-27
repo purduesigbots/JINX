@@ -10,46 +10,7 @@
     <link id="chart-stylesheet" rel="stylesheet" type="text/css" >
     <link id="terminal-stylesheet" rel="stylesheet" type="text/css">
     <!--<link href="../assets/css/combinedNormal.css" rel="stylesheet" type="text/css" id="size-stylesheet">-->
-
-    <script src="../assets/javascript/jquery-2.1.4.js"></script>
-
-    <!--Adapts styling to different screen widths-->
-    <!--<script src="../assets/javascript/resolutionAdaptation.js"></script>-->
-
-    <!--Scripts for communicating with data supplier and processing data-->
-    <script id="terminal-script" async src="../assets/javascript/terminalScript.js"></script>
-    <script id="talker-script" async src="../assets/javascript/talker.js"></script>
-
-    <!--All scripts related to graphing-->
-    <script src="../assets/javascript/flot-flot-958e5fd/jquery.flot.js"></script>
-    <script src="../assets/javascript/flot-flot-958e5fd/jquery.flot.time.js"></script>
-    <script src="../assets/javascript/grapher.js"></script>
-
-    <!--Sets up new graphs-->
-    <script type="text/javascript">
-      $(document).ready(function prepareGraph() {
-          //Set css attributes here to alleviate load on server
-          $("#combined-stylesheet").attr("href", "../assets/css/combined.css");
-          $("#chart-stylesheet").attr("href", "../assets/css/exampleflot.css");
-          $("#terminal-stylesheet").attr("href", "../assets/css/terminal.css");
-          var numPlotsCreated = 0;
-
-          //Should only be triggered once, the first time graphable data is found
-          $("body").one("NewData", function() {
-              newPlot(numPlotsCreated);
-              numPlotsCreated += 1;
-              addValueTracker("time", 0);
-          });
-
-          //Create a new plot when button is clicked
-          $('#addPlot').click(function() {
-              numPlotsCreated += 1;
-              newPlot(numPlotsCreated);
-          });
-      });
-</script>
-</head>
-
+  </head>
 <body>
   <h1 id="title">JINX</h1>
 
@@ -102,5 +63,45 @@
     <div class="chartContainer" id = "chartContainer">
     </div>
   </div>
+
+
+<!--Scripts at the bottom to render views first-->
+  <script type="text/javascript" src="../assets/javascript/jquery-2.1.4.js"></script>
+
+  <!--Adapts styling to different screen widths-->
+  <!--<script src="../assets/javascript/resolutionAdaptation.js"></script>-->
+
+  <!--Scripts for communicating with data supplier and processing data-->
+  <script type="text/javascript" id="terminal-script" src="../assets/javascript/terminalScript.js"></script>
+  <script type="text/javascript" id="talker-script" src="../assets/javascript/talker.js"></script>
+
+  <!--All scripts related to graphing-->
+  <script type="text/javascript" src="../assets/javascript/flot-flot-958e5fd/jquery.flot.js"></script>
+  <script type="text/javascript" src="../assets/javascript/flot-flot-958e5fd/jquery.flot.time.js"></script>
+  <script type="text/javascript" src="../assets/javascript/grapher.js"></script>
+
+  <!--Sets up new graphs-->
+  <script type="text/javascript">
+    $(document).ready(function prepareGraph() {
+        //Need to figure out how to try to load css/scripts until properly loaded
+        $("#combined-stylesheet").attr("href", "../assets/css/combined.css");
+        $("#chart-stylesheet").attr("href", "../assets/css/exampleflot.css");
+        $("#terminal-stylesheet").attr("href", "../assets/css/terminal.css");
+        var numPlotsCreated = 0;
+
+        //Should only be triggered once, the first time graphable data is found
+        $("body").one("NewData", function() {
+            newPlot(numPlotsCreated);
+            numPlotsCreated += 1;
+            addValueTracker("time", 0);
+        });
+
+        //Create a new plot when button is clicked
+        $('#addPlot').click(function() {
+            numPlotsCreated += 1;
+            newPlot(numPlotsCreated);
+        });
+    });
+  </script>
 </body>
 </html>

@@ -174,14 +174,11 @@ function toGraphToString(toGraph) {
         if(index == 0) {
 
         } else {
-            title = title.concat(", ");
-            title = title.concat(ySelection);
+            title = title.concat(", ", ySelection);
         }
     });
 
-    title = title.concat(" vs ");
-    title = title.concat(toGraph.xSelection);
-
+    title = title.concat(" vs ", toGraph.xSelection);
     return(title);
 }
 
