@@ -64,6 +64,9 @@ $(document).ready(function() {
                 if(data.JINX.MID != timestamp) {
                       numDatareceived = numDatareceived + 1;
                       handleJINXData(data.JINX);
+                } else {
+                    //If server returns same JSON data from some reason, ask again after 0.5 seconds
+                    setTimeout(getJSON, 500);
                 }
             }, "json");
     }

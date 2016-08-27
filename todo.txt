@@ -10,9 +10,10 @@ PYTHON
 	Ask for invalid messages to be resent
 	Start/Stop server function
 	Start/Stop serial function
-	
+	Allow receiving more than one name/value pair at a time.
 
 PROS
 	Token parser
 	Float/Double parser
 	Resending of invalid messages
+	Allow sending more than one name/value pair at a time

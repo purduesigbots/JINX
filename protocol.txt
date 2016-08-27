@@ -1,0 +1,17 @@
+JINX Protocol Specifications
+
+1) Cortex->Server communication
+	A) All messages must begin with "JINX" and end with "\r\n"
+		i) Messages that contain more than 1 "JINX" are assumed to be the result of 2 or more corrupted messages
+		ii) Messages will be read 1 at a time until a "\n" is reached. If there is no "\n", nothing will be read
+	B) Individual tokens of the message should be delimited with "_" (underscore). 
+	C) Therefore, the user should never send "JINX", "\n", or "_" in their message. "\r" may be sent.
+
+2) Server->GUI communication
+	A) The server should retain a list of all past messages from the cortex for the GUI to retrieve. This allows any GUI to connect at any time and still receive all the information from the server
+	B) All messages should be proper JSON objects named "JINX", and must contain a unique value named "MID", standing for "Message ID". It is recommended that the value of MID strictly increases as new messages are received. The MID may be supplied by the cortex.
+	C) If the host is unable to host a web server, messages may be written to a file located at "assets/json/jason.json" for the GUI to read.
+
+3) GUI->Server communication 
+	A) Requests for new data should specify how many unique messages have already been received, so the server can send the subsequent message.
+	B) Messages to be sent to the cortex should be sent via POST and named "command"

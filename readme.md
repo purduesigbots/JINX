@@ -5,7 +5,7 @@ The functions written in PROS are responsible for reading and writing data over 
 
 Reading is controlled through a never-ending task. The reader will retrieve an entire message up to a newline character, then pass the message to a parser. The parser should be re-written by the end user to allow the robot to be controlled from the browser. An example of such implementation is provided in JINX.c
 
-
+TODO: Explain Python and Webpage
 
 JINX obtains serial data from the VEX Cortex, then sends the data out over a server.
 The data, encoded as JSON, is then decoded client side, and plotted.
