@@ -45,6 +45,8 @@
 
 #include <API.h>
 #include "JINX.h"
+#include "buttons.h"
+#include "motors.h"
 
 // Allow usage of this file in C++ programs
 #ifdef __cplusplus

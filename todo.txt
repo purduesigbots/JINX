@@ -1,0 +1,18 @@
+JINX TODO:
+HTML/JAVASCRIPT
+	Command table
+		Command to send
+		Delay
+		Start sending button
+	Download individual variables
+
+PYTHON
+	Ask for invalid messages to be resent
+	Start/Stop server function
+	Start/Stop serial function
+	
+
+PROS
+	Token parser
+	Float/Double parser
+	Resending of invalid messages

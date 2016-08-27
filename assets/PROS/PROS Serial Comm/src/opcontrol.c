@@ -17,6 +17,20 @@
 
 #include "main.h"
 
+/* set DRIVER to 1 to turn on driver controls 0 to turn it off */
+#define DRIVER 0
+#define OTHER 0
+
+#define DEADBAND 5
+
+/* analog is always reading some value so if its magnitude is less than DEADBAND, ignore it */
+int scaleJoystick(int in) {
+	if (in > DEADBAND)
+		return (in * in) >> 7;
+	else if (in < -DEADBAND)
+		return (-in * in) >> 7;
+	return 0;
+}
 
 /**
  * Runs the user operator control code.
@@ -30,16 +44,40 @@
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
-    int messInt = 0;
-    char messStr[50];
+	while (true)
+	{
+#if DRIVER
+		/* analog axis are marked on the controllers
+		 * left analog is ch3(vertical) and ch4(horizontal) and the right analog is ch1(horizontal) and ch2(vertical)
+		 * we do not need the right analog y axis (ch2) because the right analog is only used for turning
+		 */
+		int ch3 = scaleJoystick(joystickGetAnalog(1, 3));
+		int ch4 = scaleJoystick(joystickGetAnalog(1, 4));
+		int ch1 = scaleJoystick(joystickGetAnalog(1, 1));
 
-	while (true) {
-		delay(2000);
-        if (messInt > 99) {
-            messInt = -99;
-        }
-        sprintf(messStr, "%d", messInt++);
-        sendData("TestData", messStr);
-        printf("test\n");
+		/* setting each wheel's motor to correct speed given both analogs positions */
+		int upperLeft = ch3 + ch4 + ch1;
+		int upperRight = -ch3 + ch4 + ch1;
+		int lowerLeft = ch3 - ch4 + ch1;
+		int lowerRight = -ch3 - ch4 + ch1;
+
+		/* call set drive with calculated values so that it sets each motor accordingly */
+		setDrive(upperLeft, upperRight, lowerLeft, lowerRight);
+
+		if (buttonIsNewPress(JOY1_8U)) {
+			setLift(50);
+		}
+		else if(buttonIsNewPress(JOY1_8D)) {
+			setLift(-30);
+		}
+		else if(buttonIsNewPress(JOY1_8L)) {
+			setLift(0);
+		}
+
+#elif OTHER
+		/* Notice how this is grayed out */
+
+#endif
+		delay(30);
 	}
 }

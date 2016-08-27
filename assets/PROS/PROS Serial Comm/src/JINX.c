@@ -24,17 +24,34 @@ static FILE* comPort = stdout;
     //Good practice is to put its prototype in JINX.h, though.
     void handleGet() {
         char message[100];
-        parseMessage(message);
+        readLine(message);
         if (strcmp(message, "DEBUG_JINX") == 0) {
             //Stringify DEBUG_JINX. I think.
             //TODO: Make sure this works
-
+            writeJINXMessage("Asked for Debug");
             sprintf(message, "%s, %d", message, DEBUG_JINX);
         } else {
             strcat(message, " was unable to be gotten.");
         }
 
         writeJINXMessage(message);
+    }
+
+    void handleDrive() {
+        char message[100];
+        readLine(message);
+        if (strcmp(message, "f") == 0) {
+            writeJINXMessage("Driving forward");
+            setDrive(120, 120, 120, 120);
+        } else if (strcmp(message, "b") == 0) {
+            writeJINXMessage("Driving backwards");
+            setDrive(-120, -120, -120, -120);
+        } else if (strcmp(message, "s") == 0) {
+            writeJINXMessage("Stopping");
+            setDrive(0,0,0,0);
+        } else {
+            writeJINXMessage("Invalid drive command. Should be 'f', 'b', or 's'.")
+        }
     }
 
     //Returns integer parsed from character buffer
@@ -98,12 +115,6 @@ bool setComPort(FILE* port) {
     return false;
 }
 
-
-char * getMessage(char* JINXMessage) {
-    return NULL;
-}
-
-
 void writeSerial(char* message) {
     fprintf(comPort, "%s%s%s%s", JINX_HEADER, JINX_DELIMETER, message, JINX_TERMINATOR);
     fflush(comPort);
@@ -162,6 +173,8 @@ void parseMessage(char* message) {
     } else if(strcmp(message, "get") == 0) {
         //Call another function to handle "get"
         handleGet();
+    } else if (strcmp(message, "drive") == 0) {
+        handleDrive();
     } else {
         //Do default
         writeJINXMessage("No comparison found");

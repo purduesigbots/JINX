@@ -19,10 +19,10 @@ class VexPortError(IOError):
 '''
 def findVexPort():
     port = ""
-    vexPortProduct = "CDC RC Controller"
+    vexPortProduct = ["CDC RC Controller", "Vex Robotics Prog Board"]
     for listPort in serial.tools.list_ports.comports():
-        #print("Port product: ", listPort.product)
-        if (str(listPort.product).strip() == (vexPortProduct)):
+        print("Port product: ", listPort)
+        if (str(listPort.product).strip() in (vexPortProduct)):
             port = listPort.device
             #print("found port with path", listPort.device)
             break
