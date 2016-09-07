@@ -104,7 +104,7 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
             #Send command to cortex
             comm = post_data['command'][0]
             response = str(magicGlobalDict["JINX_Controller"].writeSerial(comm))
-            response = self.prepareResponse(response)
+            response = self.(response)
             sendReply = True
         
         #If GUI is requesting new data and we are talking to cortex

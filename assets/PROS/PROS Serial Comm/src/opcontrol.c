@@ -19,9 +19,27 @@
 
 /* set DRIVER to 1 to turn on driver controls 0 to turn it off */
 #define DRIVER 0
-#define OTHER 0
+#define OTHER 1
+#define TEST_MOTORS 2
 
 #define DEADBAND 5
+
+static int opmode = TEST_MOTORS;
+
+int setOpmode(int mode) {
+    if (mode == DRIVER) { //Enable controll via joystick
+        opmode = DRIVER;
+        return opmode;
+    } else if (mode == OTHER) { //Sent test JINX debug data
+        opmode = OTHER;
+        return opmode;
+    }else if (mode == TEST_MOTORS) {
+        opmode = TEST_MOTORS;
+        return opmode;
+    } else { //If not one of the available modes
+        return -1;
+    }
+}
 
 /* analog is always reading some value so if its magnitude is less than DEADBAND, ignore it */
 int scaleJoystick(int in) {
@@ -44,9 +62,10 @@ int scaleJoystick(int in) {
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
-	while (true)
-	{
-#if DRIVER
+    int i = 0;
+    char mess[5];
+	while (true) {
+if (opmode == DRIVER) {
 		/* analog axis are marked on the controllers
 		 * left analog is ch3(vertical) and ch4(horizontal) and the right analog is ch1(horizontal) and ch2(vertical)
 		 * we do not need the right analog y axis (ch2) because the right analog is only used for turning
@@ -73,11 +92,49 @@ void operatorControl() {
 		else if(buttonIsNewPress(JOY1_8L)) {
 			setLift(0);
 		}
+} else if (opmode == OTHER) {
+		if (++i > 99) {
+            i = -99;
+        }
+        sprintf(mess, "%d", i);
+        sendData("TestData", mess);
 
-#elif OTHER
-		/* Notice how this is grayed out */
+} else if (opmode == TEST_MOTORS) {
+        imeInitializeAll();
+        delay(5000); //Delay 5 seconds to allow JINX time to connect
+        int delayTime = 3000; //Run motors for 3 seconds
+        int motorUpperLeftV, motorUpperRightV, motorLowerLeftV, motorLowerRightV; //Store motor velocities
+        motorUpperLeftV = 0;
+        motorUpperRightV = 0;
+        motorLowerLeftV = 0;
+        motorLowerRightV = 0;
+        char dataToSend[50];
 
-#endif
+        for (int pwm = 0; pwm < 128; pwm++) {
+            setDrive(pwm, pwm, pwm, pwm);
+
+            imeGetVelocity(0, &motorUpperLeftV);  //Get Velocities
+            imeGetVelocity(1, &motorUpperRightV);
+            imeGetVelocity(2, &motorLowerLeftV);
+            imeGetVelocity(3, &motorLowerRightV);
+
+            //Send velocities
+            sprintf(dataToSend, "%d", motorUpperLeftV);
+            sendData("UpperLeft", dataToSend);
+            sprintf(dataToSend, "%d", motorUpperRightV);
+            sendData("UpperRight", dataToSend);
+            sprintf(dataToSend, "%d", motorLowerLeftV);
+            sendData("LowerLeft", dataToSend);
+            sprintf(dataToSend, "%d", motorLowerRightV);
+            sendData("LowerRight", dataToSend);
+
+            sprintf(dataToSend, "%d", pwm);
+            sendData("PWM", dataToSend);
+
+            delay(delayTime);
+        }
+}
+//endif
 		delay(30);
 	}
 }

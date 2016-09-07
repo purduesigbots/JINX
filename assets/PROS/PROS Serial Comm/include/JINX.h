@@ -78,4 +78,18 @@ void sendData(char* name, char* value);
  *Repeatedly reads serial data, then passes of to parser to be handled.
  */
 void JINXRun(void* ignore);
+
+/**
+ *@param mode: Desired operator control mode
+ *
+ *Returns mode set, or -1 if invalid mode
+ */
+int setOpmode(int mode);
+
+/**
+ *@param intString: Character buffer to parse
+ *
+ *Returns integer representation of string.
+ */
+int parseInt(char* intString);
 #endif

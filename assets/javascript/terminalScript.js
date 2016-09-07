@@ -6,6 +6,14 @@ var enterKey = 13;
 var commandArrayIndex = 0;     //Keeps track of where in command history you are
 var commandAddress = "../assets/python3/command.py";
 
+
+function getCommand() {
+    comm = document.getElementById("commandLine").value;
+    comm = (comm == "") ? commandInput : comm; //If empty string, use previous input
+    console.log("Command is ", comm);
+    return comm;
+}
+
 function addTerminal(line, Class, terminalObject) {	//append text to the terminal
     var time = new Date();
     var formatTime = time.getMinutes() + ":" + time.getSeconds();//Assume only minutes and seconds matter
@@ -39,6 +47,7 @@ function addCommandHistory(command) {
 }
 
 function submitTerminal(terminalObject) {	//Submits command to terminal from input line
+    commandInput = getCommand();
     addTerminal(commandInput, "command", terminalObject);
     postCommand(commandInput);
 
@@ -79,8 +88,8 @@ function addValueTracker(varName, initialVal) {
 }
 
 function updateValueTracker(varName, varVal) {
-    //console.log(varName);
-    //console.log(varVal);
+    console.log(varName);
+    console.log(varVal);
     document.getElementById(varName + "trackerVal").innerHTML = varVal;
 }
 

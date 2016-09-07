@@ -102,6 +102,7 @@ class JINX_Serial():
             try:
                 self.JINX_Controller.parseCortexMessage(rawMessage)
             except: #TODO: Find what the exception should be
+                print("090080 Hmm shouldn't be in here.")
                 parseCortexMessage(rawMessage)
             
             #reset message

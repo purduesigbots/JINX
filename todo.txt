@@ -5,6 +5,12 @@ HTML/JAVASCRIPT
 		Delay
 		Start sending button
 	Download individual variables
+	handle when variable names have spaces
+	If non-numerical data send to variable expected to be numeric, then everything gets ruined.
+	terminal sometimes doesn't submit properly.
+	Refresh bug:
+		When page is already loaded, and you refresh, some scripts are removed
+		When you go to a different page and come back, it works
 
 PYTHON
 	Ask for invalid messages to be resent

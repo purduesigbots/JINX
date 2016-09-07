@@ -60,12 +60,13 @@ $(document).ready(function() {
             jsonAddress,
             {received: "".concat(numDatareceived)},
             function(data) {
+                data.JINX.MID = parseInt(data.JINX.MID);
                 console.log("JINX Data", data.JINX);
-                if(data.JINX.MID != timestamp) {
+                if(data.JINX.MID > timestamp) { //Assume strictly increasing data
                       numDatareceived = numDatareceived + 1;
                       handleJINXData(data.JINX);
-                } else {
-                    //If server returns same JSON data from some reason, ask again after 0.5 seconds
+                } else if (data.JINX.MID == timestamp){
+                    //If server returns the same or older JSON data from some reason, ask again after 0.5 seconds
                     setTimeout(getJSON, 500);
                 }
             }, "json");
@@ -123,7 +124,6 @@ $(document).ready(function() {
         getJSON();
         setTimeout(backupRequester, 10000);
     }
-
     backupRequester();
 
 });

@@ -50,8 +50,21 @@ static FILE* comPort = stdout;
             writeJINXMessage("Stopping");
             setDrive(0,0,0,0);
         } else {
-            writeJINXMessage("Invalid drive command. Should be 'f', 'b', or 's'.")
+            writeJINXMessage("Invalid drive command. Should be 'f', 'b', or 's'.");
         }
+    }
+
+    void handleOpmode() {
+        int ret;
+        int opmode;
+
+        char message[100];
+        readLine(message);
+        opmode = parseInt(message);
+
+        ret = setOpmode(opmode);
+        sprintf(message, "Operator control mode: %d.", ret);
+        writeJINXMessage(message);
     }
 
     //Returns integer parsed from character buffer
@@ -175,6 +188,8 @@ void parseMessage(char* message) {
         handleGet();
     } else if (strcmp(message, "drive") == 0) {
         handleDrive();
+    } else if (strcmp(message, "opmode") == 0) {
+        handleOpmode();
     } else {
         //Do default
         writeJINXMessage("No comparison found");
@@ -185,6 +200,7 @@ void JINXRun(void* ignore) {
 	int del = 500;
 	char inStr[100];
 
+    //setOpmode(1);
     //Delay a second to allow time for communication to open up
 	delay(1000);
 
