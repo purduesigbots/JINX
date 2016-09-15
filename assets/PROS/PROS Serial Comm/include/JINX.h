@@ -12,8 +12,7 @@
 
 //#define MAX_MESSAGE_SIZE 100
 //#define PROTOCOL_SIZE 10
-// #define PROTOCOL_SIZE (strlen(JINX_HEADER) + strlen(JINX_DELIMETER) \
-//     + strlen(JINX_TERMINATOR))
+//#define PROTOCOL_SIZE (strlen(JINX_HEADER) + strlen(JINX_DELIMETER) + strlen(JINX_TERMINATOR))
 
 //Functions
 /**

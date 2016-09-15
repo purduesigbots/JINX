@@ -100,17 +100,24 @@ if (opmode == DRIVER) {
         sendData("TestData", mess);
 
 } else if (opmode == TEST_MOTORS) {
-        imeInitializeAll();
+        // writeJINXMessage("Started TEST_MOTERS in Operator Control 0.");
+        // writeJINXMessage("Started TEST_MOTERS in Operator Control 1.");
         delay(5000); //Delay 5 seconds to allow JINX time to connect
         int delayTime = 3000; //Run motors for 3 seconds
+        int pwm = 0;
         int motorUpperLeftV, motorUpperRightV, motorLowerLeftV, motorLowerRightV; //Store motor velocities
         motorUpperLeftV = 0;
         motorUpperRightV = 0;
         motorLowerLeftV = 0;
         motorLowerRightV = 0;
         char dataToSend[50];
+        //writeJINXMessage("Started TEST_MOTERS in Operator Control 1.");
+        imeReset(0);
+        imeReset(1);
+        imeReset(2);
+        imeReset(3);
 
-        for (int pwm = 0; pwm < 128; pwm++) {
+        for (pwm = 0; pwm < 128; pwm++) {
             setDrive(pwm, pwm, pwm, pwm);
 
             imeGetVelocity(0, &motorUpperLeftV);  //Get Velocities

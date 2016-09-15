@@ -7,6 +7,9 @@ class JINX_Serial():
         Controller: Mediatior designed to allow serial module to talk to server
     '''
     def __init__(self, controller):
+        #Encode and decode serial messages with ASCII
+        self.encoding = "ascii"
+    
         #Used to keep track of and kill Serial threads
         self.JINXThreads = []
         self.shutdownJINX = threading.Event()
@@ -79,7 +82,7 @@ class JINX_Serial():
             #TODO: Fix timeout issue
             rawMessage = vexPort.readline()
             try:
-                rawMessage = rawMessage.decode("utf-8")
+                rawMessage = rawMessage.decode(self.encoding)
             except UnicodeDecodeError:
                 continue
             
@@ -134,7 +137,7 @@ class JINX_Serial():
         #   then append newline to signify end of message
         #Unicode necessary to send over serial
         message = message.strip() + "\n"
-        message = message.encode("utf-8")
+        message = message.encode(self.encoding)
 
         #Not actually used-
         #   Most writing jobs happen fast enough that they don't overwrite each other
@@ -142,7 +145,7 @@ class JINX_Serial():
         #JINXWriteLock.acquire()
         
         #DEBUG: Confirm proper encryption
-        print("Write log: ", message.decode("utf-8"))
+        print("Write log: ", message.decode(self.encoding))
         self.vexPort.write(message)
         self.vexPort.flush()
         #JINXWriteLock.release()

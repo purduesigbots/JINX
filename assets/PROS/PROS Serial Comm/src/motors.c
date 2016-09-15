@@ -16,7 +16,6 @@ void setDrive(int upperLeft, int upperRight, int lowerLeft, int lowerRight) {
 	motorSet(MOTOR_UPPER_RIGHT, upperRight);
 	motorSet(MOTOR_LOWER_LEFT, lowerLeft);
 	motorSet(MOTOR_LOWER_RIGHT, lowerRight);
-
 }
 
 // set power to lift motors
@@ -38,4 +37,3 @@ void setLift(int topLeft, int bottomLeft, int topRight, int bottomRight) {
 	motorSet(MOTOR_LIFT_RIGHT_BOT, bottomRight);
 }
 */
-
