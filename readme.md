@@ -14,3 +14,23 @@ Example data includes timestamps, Error data, and command strings
 
 JINX also includes the ability to upload command strings to the server
 
+===USER GUIDE===
+=Will be updated and moved amongst PROS documentation soon=
+JINX Setup:
+	Host computer:
+  Download Python 3
+  Install PySerial (pip3 install pyserial)
+	
+  Cortex: 
+  Include JINX.c and JINX.h
+  Call “taskCreate(JINXRun, TASK_DEFAULT_STACK_SIZE, NULL, (TASK_PRIORITY_DEFAULT));” in initialize();
+
+JINX Run:
+	Host computer:
+  Connect cortex and computer over USB. Note: Some computer will not recognize direct connections. Generally, if you can flash code, you can connect with JINX
+  Run python3 JINX.py
+
+	Cortex:
+  Use sendData(char *name, char* value)
+  Use sprintf() to put numeric values into a string to be written over serial.
+  The name sent here will be the name shown on the GUI in browser
