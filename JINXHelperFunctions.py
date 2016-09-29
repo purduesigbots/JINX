@@ -4,6 +4,7 @@ import serial.tools.list_ports
 import threading
 import time
 from queue import Queue
+USB_VID = [0x4d8, 0x67b]
 
 '''
     IO Error, but named specifically for vex ports
@@ -19,9 +20,9 @@ class VexPortError(IOError):
 '''
 def findVexPort():
     """
-    :return: Returns a list of valid serial ports that we believe are VEX Cortex Microcontrollers
+    :return: Returns a valid serial port that we believe is a VEX Cortex Microcontroller
     """
-    return [x for x in serial.tools.list_ports.comports() if x.vid is not None and (x.vid in USB_VID or 'vex' in x.product.lower())]
+    return [x.device for x in serial.tools.list_ports.comports() if x.vid is not None and (x.vid in USB_VID or 'vex' in x.product.lower())][0]
 
 
 '''
