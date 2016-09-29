@@ -4,6 +4,7 @@ import serial.tools.list_ports
 import threading
 import time
 from queue import Queue
+USB_VID = [0x4d8, 0x67b]
 
 '''
     IO Error, but named specifically for vex ports
@@ -18,21 +19,10 @@ class VexPortError(IOError):
     Returns device name of first matching port found
 '''
 def findVexPort():
-    port = ""
-    vexPortProduct = ["CDC RC Controller", "Vex Robotics Prog Board"]
-    for listPort in serial.tools.list_ports.comports():
-        print("Port product: ", listPort)
-        if (str(listPort.product).strip() in (vexPortProduct)):
-            port = listPort.device
-            #print("found port with path", listPort.device)
-            break
-
-    if(port == ""):
-        raise VexPortError("No Vex Ports were found. \n"
-                    + "Vex ports should have product attribute '{}'"
-                    .format(vexPortProduct))
-    print("Port: ", port)
-    return port
+    """
+    :return: Returns a valid serial port that we believe is a VEX Cortex Microcontroller
+    """
+    return [x.device for x in serial.tools.list_ports.comports() if x.vid is not None and (x.vid in USB_VID or 'vex' in x.product.lower())][0]
 
 
 '''
@@ -46,7 +36,7 @@ def openVexPort():
     return vexPort
 
 '''
-    Do everything necessary to close the port. 
+    Do everything necessary to close the port.
     Should be able to be called infinite times without issue,
         as long as port is a valid port
 '''
@@ -77,7 +67,7 @@ def receivedProperMessage(message):
     #Specified by JINX Protocol (To be written)
     JINX_HEADER = "JINX"
     JINX_TERMINATOR = "\r\n"
-    
+
     #Error responses
     BAD_HEADER_MESSAGE = "BadStart"
     BAD_TERMINATOR_MESSAGE = "BadTerm"
