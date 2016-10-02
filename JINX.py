@@ -3,26 +3,20 @@ import serialReadWrite
 import threading
 import time
 
-'''
-    CLASS: Used when unable to find talker within controller
-'''
+'''CLASS: Used when unable to find talker within controller'''
 class MissingTalkerError(NameError):
     pass
 
 
-'''
-    CLASS: Stores JSON data to send to browser, retrieved from cortex
-'''
+'''CLASS: Stores JSON data to send to browser, retrieved from cortex'''
 class JINX_Data():
 
-    '''
-        Class variable: unique id for each dataset created
-    '''
+    '''Class variable: unique id for each dataset created'''
     MID = 0
 
     '''
-        Name: name of JSON data
-        Value: Value of JSON data
+        @param name: name of JSON data
+        @param value: Value of JSON data
         Incoming data is not vetted for illegal characters, such as ' " '
     '''
     def __init__(self, name, value):
@@ -31,9 +25,7 @@ class JINX_Data():
         self.mid = JINX_Data.MID
         JINX_Data.MID += 1
 
-    '''
-        Return string representation of JSON-formatted name/value data
-    '''
+    '''Return string representation of JSON-formatted name/value data'''
     def getJSON(self):
         JSON = '{"JINX": {'
         JSON += '"%s": "%s"' %(self.name, str(self.value))
@@ -41,43 +33,32 @@ class JINX_Data():
         JSON += '}}'
         return JSON
 
-    '''
-        For built-int str() function
-        Just calls getJSON to return JSON-compliant data
-    '''
+    '''For built-int str() function
+        Just calls getJSON to return JSON-compliant data'''
     def __str__(self):
         return self.getJSON()
 
 
-'''
-    CLASS: Allow serial and server modules to communicate
-    Passes itself to serial and server instances, and recieves their instances in return
-'''
+'''CLASS: Allow serial and server modules to communicate
+    Passes itself to serial and server instances, and recieves their instances in return'''
 class JINX_Controller():
 
-    '''
-        Creat empty array to hold data, and set up talker variables
-    '''
+    '''Creat empty array to hold data, and set up talker variables'''
     def __init__(self):
         self.JSONData = []
         self.serialTalker = None
         self.serverTalker = None
+        self.closed = False
     
-    '''
-        Assign reference to real serial instance
-    '''
+    '''Assign reference to real serial instance'''
     def setSerialTalker(self, talker):
         self.serialTalker = talker
     
-    '''
-        Assign reference to real server isntance
-    '''
+    '''Assign reference to real server instance'''
     def setServerTalker(self, talker):
         self.serverTalker = talker
     
-    '''
-        Add data to the array. May one day update helper instance variables
-    '''
+    '''Add data to the array. May one day update helper instance variables'''
     def addJSONData(self, data):
         self.JSONData.append(data)
         #DEBUG: Confrim data added. Warning: Gets big
@@ -85,7 +66,7 @@ class JINX_Controller():
     
 
     '''
-        Message: Stripped message from cortex
+        @param message: Stripped message from cortex
         Splits message by token delimeter specified in JINX Protocol (to be written)
         Parses tokens and acts on requests
     '''
@@ -111,13 +92,16 @@ class JINX_Controller():
             print("Unknown message type: ", message)
 
     '''
-        DataNum: Number of values previously received by browser
+        @param DataNum: Number of values previously received by browser
         Block until new JSON data is available
-        Return JSON-compliant representation of cortex data
+        @return: JSON-compliant representation of cortex data
     '''
     def getJSONData(self, dataNum):
         #wait until there is data to send
         while(dataNum >= len(self.JSONData)):
+            #Don't enter infinite loop if JINX is closed
+            if (self.closed or not threading.main_thread().is_alive()):
+                return "JINX_Error: JINX Terminated\r\n"
             time.sleep(0.5)
 
         #DEBUG: Confirm data returned
@@ -125,9 +109,9 @@ class JINX_Controller():
         return self.JSONData[dataNum]
 
     '''
-        Message: Raw message to send
+        @param Message: Raw message to send
         *args: Assumed to be string formatting variables
-        Return confirmation that writing works
+        @return: confirmation that writing works
     '''
     def writeSerial(self, message, *args):
         if (not self.serialTalker):
@@ -139,34 +123,90 @@ class JINX_Controller():
         #TODO: Tie return to value of serialTalker.write
         return "Magic global dict worked"
 
+    def startThreads(self):
+        #Communicate with cortex
+        #self.serialTalker = serialReadWrite.JINX_Serial(controller)
+        #self.serialThread = threading.Thread(target=self.serialTalker.run, args=(), name="Sam")
+        #self.serialThread.start()
+        
+        #Communicate with browser/GUI
+        self.serverTalker = server.JINX_Server(controller)
+        #self.serverThread = threading.Thread(target=self.serverTalker.run)#, args=(self,), daemon=True)
+        #self.serverThread.start()
+        self.serverTalker.run()
+        
+        #Shut everything down when main is shut down
+        threadManagerThread = threading.Thread(target=self.threadManagerRun, name="Tom")
+        threadManagerThread.start()
 
+
+    def threadManagerRun(self):
+        #Wait for the main thread to shut down
+        threading.main_thread().join()
+        self.closed = True
+        
+        #Shutdown external communications
+        if (self.serialTalker):
+            self.serialTalker.shutDown()
+        #DEBUG: Confirm shutdown control returns to main controller
+        print("JINX Controller has shut down serial talker")
+        if (self.serverTalker):
+            for i in range(3):
+                try:
+                    self.serverTalker.shutDown()
+                except:
+                    pass
+        #DEBUG: Confirm shutdown control returns to main controller
+        print("JINX Controller has shut down Server")
+        
+        #DEBUG: Waiting for threads to close
+        print("Waiting for serial talker and server to shut down.")
+        #if (self.serialThread.is_alive()):
+        #    self.serialThread.join()
+        #if (self.serverThread.is_alive()):
+        #    self.serverThread.join()
+        
+        #DEBUG: Confirm all stopped
+        print("All from JINX stopped")
+
+'''
 #DEBUG: Test JINX_Data class
 #Should look like '"JINX" {'Hello': "3"}
 dat = JINX_Data("Hello", 3)
 print(dat)
-
+        
 #Used to bridge gap between serial talker and web server
 controller = JINX_Controller()
+controller.startThreads()
 
-#Communicate with cortex
-serialTalker = serialReadWrite.JINX_Serial(controller)
-serialThread = threading.Thread(target=serialTalker.run, args=(), name = "Joe")
-serialThread.start()
-
-#Communicate with browser/GUI
-serverTalker = server.JINX_Server(controller)
-serverThread = threading.Thread(target=serverTalker.run, args=(controller,), daemon=True)
-serverThread.start()
 
 #Get STDIN messages to send to cortex
 JINX_Input = input("Enter message or quit (q): ")
 while(JINX_Input != "q"):
-    serialTalker.writeJINX(JINX_Input)
+    try:
+        controller.writeSerial(JINX_Input)
+    except MissingTalkerError as e:
+        print("Warning, no cortex connected to send message to")
     JINX_Input = input("Enter message or quit (q): ")
 
-#Shutdown external communications
-serialTalker.shutDown()
-serverTalker.shutDown()
 
-#DEBUG: Confirm all stopped
-print("All from JINX stopped")
+'''
+
+controller = JINX_Controller()
+serv = server.JINX_Server(controller)
+
+serverThread = threading.Thread(target=serv.run)
+serverThread.start()
+#print(threading.enumerate())
+
+while(input("Enter q to quit: ") != "q"):
+    time.sleep(1)
+
+#print("?")
+serv.shutDown()
+print("Should be quit")
+#print(threading.enumerate())
+
+
+
+

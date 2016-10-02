@@ -2,6 +2,7 @@
 #define JINX_H
 
 //INCLUDES
+#include "main.h"
 #include <string.h>
 #include <stdarg.h>
 
@@ -36,7 +37,7 @@ bool setComPort(FILE* port);
  *Variable length arguments/string formatting in this method.
  *Strings must be formatted with sprintf or like before being passed as the message
  */
-void writeSerial(char* message);
+void writeSerial(const char *message);
 
 /**
  *message: raw string to send. Don't pass newlines.
@@ -44,7 +45,7 @@ void writeSerial(char* message);
  *Calls sendData with name "msg" and value message
  *Just a convinience to make it easy to send raw strings to GUI
  */
-void writeJINXMessage(char* message);
+void writeJINXMessage(const char *message);
 
 /**
  *stringBuffer: String to copy line into
@@ -54,14 +55,14 @@ void writeJINXMessage(char* message);
  *
  *TODO: Set maximum message size to prevent buffer overflow.
  */
-int readLine(char* stringBuffer);
+int readLine(char *stringBuffer);
 
 /**
  *message: message recieved from comPort
  *
  *User should define function and handle requests as they see fit.
  */
-void parseMessage(char* message);
+void parseMessage(const char *message);
 
 /**
  *name: identifier in JSON sent to Front End. Should not have any whitespace
@@ -69,7 +70,7 @@ void parseMessage(char* message);
  *      Users should convert numeric data to a string beforehand, because I am too lazy to implement myself
  *      Recommended that users declare temp string and use sprintf
  */
-void sendData(char* name, char* value);
+void sendData(const char *name, const char *value);
 
 /**
  *ignore: Do not use
@@ -83,12 +84,12 @@ void JINXRun(void* ignore);
  *
  *Returns mode set, or -1 if invalid mode
  */
-int setOpmode(int mode);
+int setOpmode(const int mode);
 
 /**
  *@param intString: Character buffer to parse
  *
  *Returns integer representation of string.
  */
-int parseInt(char* intString);
+int parseInt(const char *intString);
 #endif
