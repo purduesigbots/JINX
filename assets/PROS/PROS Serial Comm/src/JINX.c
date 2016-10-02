@@ -23,6 +23,8 @@ static FILE* comPort = stdout;
     //Since it is at the top of this file, it can be called from anywhere else in this file.
     //Good practice is to put its prototype in JINX.h, though.
     void handleGet() {
+
+
         char message[100];
         readLine(message);
         if (strcmp(message, "DEBUG_JINX") == 0) {
@@ -36,6 +38,7 @@ static FILE* comPort = stdout;
 
         writeJINXMessage(message);
     }
+
 
     void handleDrive() {
         char message[100];
@@ -68,7 +71,7 @@ static FILE* comPort = stdout;
     }
 
     //Returns integer parsed from character buffer
-    int parseInt(char* intString) {
+    int parseInt(const char *intString) {
         char digit;
 
         //Limit to 32 digit integer. Please don't send 32 digit integers
@@ -128,18 +131,17 @@ bool setComPort(FILE* port) {
     return false;
 }
 
-void writeSerial(char* message) {
+void writeSerial(const char *message) {
     fprintf(comPort, "%s%s%s%s", JINX_HEADER, JINX_DELIMETER, message, JINX_TERMINATOR);
     fflush(comPort);
 }
 
 //Wrapper function for sendData to send non-numeric data more easily
-void writeJINXMessage(char* message) {
-    char msg[4] = "msg";
-    sendData(msg, message);
+void writeJINXMessage(const char *message) {
+    sendData("msg", message);
 }
 
-void sendData(char* name, char* value) {
+void sendData(const char *name, const char *value) {
     // if (strlen(name) + strlen(value) >= MAX_MESSAGE_SIZE + PROTOCOL_SIZE) {
     //     fprintf(comPort, "Warning: Tried to send too large a message named %s", name);
     //     return;
@@ -176,7 +178,7 @@ int readLine(char* stringBuffer) {
     return bufferIndex;
 }
 
-void parseMessage(char* message) {
+void parseMessage(const char *message) {
     writeJINXMessage(message);
 
     //Example parse. User can should replace with own body.

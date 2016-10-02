@@ -6,7 +6,6 @@ var enterKey = 13;
 var commandArrayIndex = 0;     //Keeps track of where in command history you are
 var commandAddress = "../assets/python3/command.py";
 
-
 function getCommand() {
     comm = document.getElementById("commandLine").value;
     comm = (comm == "") ? commandInput : comm; //If empty string, use previous input
@@ -109,6 +108,15 @@ function downloadVarVals() {
         //downloadWindow.document.write("<p>" + toWrite + "</p>");
     });
     dlVarVals.href="data:text/csv,"+encodeURIComponent(toWrite);
+}
+
+function addScriptTableRow(numScriptRows) {
+    comID = "scriptCom".concat(numScriptRows);
+    delayID = "scriptDelay".concat(numScriptRows);
+
+    comCol = "<td id=" + comID + " class='scriptCom'>"
+    comCol += ""
+    $("#scriptTable").append($("<div class='scripter'>" + formatTime + "$ " + line + "</div>"));
 }
 
 $(document).ready(function(){

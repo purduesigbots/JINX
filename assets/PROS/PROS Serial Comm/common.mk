@@ -9,6 +9,17 @@ LIBSML=$(ROOT)/firmware/libsml.a
 LIBLCD=$(ROOT)/firmware/liblcd.a
 # Prefix for ARM tools (must be on the path)
 MCUPREFIX=arm-none-eabi-
+#Account for Mac users not having arm on $path
+#ifeq ($(OS), Windows_NT)
+#else
+#	UNAME_S := $(shell uname -s)
+#    ifeq ($(UNAME_S), Linux)
+#    endif
+	#Mac
+#	ifeq ($(UNAME_S), Darwin)
+#        MCUPREFIX = /Applications/PROS_2.0/gcc-arm-none-eabi-4_7-2014q2/ + MCUPREFIX
+#    endif
+#endif
 # Flags for the assembler
 MCUAFLAGS=-mthumb -mcpu=cortex-m3 -mlittle-endian
 # Flags for the compiler

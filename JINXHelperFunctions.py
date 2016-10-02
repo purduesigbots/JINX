@@ -6,40 +6,38 @@ import time
 from queue import Queue
 USB_VID = [0x4d8, 0x67b]
 
-'''
-    IO Error, but named specifically for vex ports
-'''
+'''IO Error, but named specifically for vex ports'''
 class VexPortError(IOError):
     pass
 
 '''
     Find serial port connecting to Vex Cortex
-    Port is assumed to have product description
-    "CDC RC Controller"
-    Returns device name of first matching port found
+    Port is assumed to have vendor ID
+    @return: valid serial port that we believe is a VEX Cortex Microcontroller, or None
 '''
 def findVexPort():
-    """
-    :return: Returns a valid serial port that we believe is a VEX Cortex Microcontroller
-    """
-    return [x.device for x in serial.tools.list_ports.comports() if x.vid is not None and (x.vid in USB_VID or 'vex' in x.product.lower())][0]
+    ports = [x for x in serial.tools.list_ports.comports()]
+
+    #DEBUG: List found ports
+    print("Ports: ", [port.device for port in ports])
+    
+    for port in ports:
+        if port.vid is not None and (port.vid in USB_VID or 'vex' in port.product.lower()):
+            return port.device
+    raise VexPortError("No connected Vex Cortexes found.")
 
 
-'''
-    Opens the serial port for communication to vex cortex
-    Returns Serial object capable of being read from and written to
-'''
+'''Opens the serial port for communication to vex cortex
+    Returns Serial object capable of being read from and written to'''
 def openVexPort():
     port = findVexPort()
     vexPort = serial.Serial(port, 115200, timeout=1)
     print("Serial successfully opened")
     return vexPort
 
-'''
-    Do everything necessary to close the port.
+'''Do everything necessary to close the port.
     Should be able to be called infinite times without issue,
-        as long as port is a valid port
-'''
+        as long as port is a valid port'''
 def closePort(port):
     try:
         port.close()
@@ -47,10 +45,9 @@ def closePort(port):
         #DEBUG: Explain error
         print("Unable to close port:", e)
 
-'''
-    Message: Stripped message from cortex
+'''@param message: Stripped message from cortex
     Just prints individual tokens to STDOUT
-'''
+    TODO: Implement'''
 def parseCortexMessage(message):
 #    print("Read: %s", message, flush=True)
 #    print("End read")
@@ -59,11 +56,12 @@ def parseCortexMessage(message):
     print(tokens)
 
 '''
-   Message: Raw message from cortex
-   Returns boolean, error
+   @param message: Raw message from cortex
+   @return tuple(boolean, error): 
+        boolean: True if valid
+        error: reason for false, or message if True
 '''
 def receivedProperMessage(message):
-
     #Specified by JINX Protocol (To be written)
     JINX_HEADER = "JINX"
     JINX_TERMINATOR = "\r\n"

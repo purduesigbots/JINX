@@ -18,13 +18,27 @@
 #include "main.h"
 
 /* set DRIVER to 1 to turn on driver controls 0 to turn it off */
-#define DRIVER 0
-#define OTHER 1
-#define TEST_MOTORS 2
+// #define DRIVER 0
+// #define OTHER 1
+// #define TEST_MOTORS 2
+
+enum Opmode {DRIVER, OTHER, TEST_MOTORS};
 
 #define DEADBAND 5
 
-static int opmode = TEST_MOTORS;
+static int opmode = DRIVER;
+
+const unsigned int TRUE_SPEED[128] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 24, 25, 25, 25, 25, 26, 26, 26, 26, 27,
+  27, 27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 29, 29, 29,
+  29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 31, 31, 31, 31, 32,
+  32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36,
+  36, 36, 37, 37, 37, 37, 38, 38, 38, 39, 39, 39, 40, 40, 41,
+  42, 42, 42, 42, 42, 43, 43, 44, 44, 45, 45, 46, 47, 47, 47,
+  48, 48, 49, 49, 50, 50, 52, 52, 52, 53, 54, 55, 55, 56, 56,
+  60, 61, 64, 65, 65, 66, 70, 72, 72, 80, 85, 127, 127
+  }; //True Speed array for Turbo Motors
 
 int setOpmode(int mode) {
     if (mode == DRIVER) { //Enable controll via joystick
@@ -33,7 +47,7 @@ int setOpmode(int mode) {
     } else if (mode == OTHER) { //Sent test JINX debug data
         opmode = OTHER;
         return opmode;
-    }else if (mode == TEST_MOTORS) {
+    } else if (mode == TEST_MOTORS) {
         opmode = TEST_MOTORS;
         return opmode;
     } else { //If not one of the available modes
@@ -51,7 +65,7 @@ int scaleJoystick(int in) {
 }
 
 /**
- * Runs the user operator control code.
+  Runs the user operator control code.
  *
  * This function will be started in its own task with the default priority and stack size whenever the robot is enabled via the Field Management System or the VEX Competition Switch in the operator control mode. If the robot is disabled or communications is lost, the operator control task will be stopped by the kernel. Re-enabling the robot will restart the task, not resume it from where it left off.
  *
@@ -62,6 +76,11 @@ int scaleJoystick(int in) {
  * This task should never exit; it should end with some kind of infinite loop, even if empty.
  */
 void operatorControl() {
+  delay(5000);
+  double foo = 0.2;
+  double bar = 1;
+  printf("%f\n\r", foo*bar);
+
     int i = 0;
     char mess[5];
 	while (true) {
@@ -95,16 +114,19 @@ if (opmode == DRIVER) {
 } else if (opmode == OTHER) {
 		if (++i > 99) {
             i = -99;
-        }
-        sprintf(mess, "%d", i);
-        sendData("TestData", mess);
+    }
+    sprintf(mess, "%d", i);
+    sendData("TestData", mess);
+    delay(1000);
+
 
 } else if (opmode == TEST_MOTORS) {
+
         // writeJINXMessage("Started TEST_MOTERS in Operator Control 0.");
         // writeJINXMessage("Started TEST_MOTERS in Operator Control 1.");
         delay(5000); //Delay 5 seconds to allow JINX time to connect
         int delayTime = 3000; //Run motors for 3 seconds
-        int pwm = 0;
+        int pwm = 0, speed;
         int motorUpperLeftV, motorUpperRightV, motorLowerLeftV, motorLowerRightV; //Store motor velocities
         motorUpperLeftV = 0;
         motorUpperRightV = 0;
@@ -117,8 +139,13 @@ if (opmode == DRIVER) {
         imeReset(2);
         imeReset(3);
 
-        for (pwm = 0; pwm < 128; pwm++) {
-            setDrive(pwm, pwm, pwm, pwm);
+        delay(500);
+        imeInitializeAll();
+        delay(500);
+
+        for (pwm = 14; pwm < 128; pwm++) {
+            speed = TRUE_SPEED[pwm];
+            setDrive(speed, speed, speed, speed);
 
             imeGetVelocity(0, &motorUpperLeftV);  //Get Velocities
             imeGetVelocity(1, &motorUpperRightV);
@@ -136,7 +163,9 @@ if (opmode == DRIVER) {
             sendData("LowerRight", dataToSend);
 
             sprintf(dataToSend, "%d", pwm);
-            sendData("PWM", dataToSend);
+            sendData("DesiredPWM", dataToSend);
+            sprintf(dataToSend, "%d", speed);
+            sendData("TruePWM", dataToSend);
 
             delay(delayTime);
         }
