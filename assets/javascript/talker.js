@@ -3,8 +3,11 @@ var graphableData = ['time'];
 var stopThings = false;
 
 $(document).ready(function() {
-    var numDatareceived = 0;
     //console.log("In talker");
+    //Server Communication request
+    var numDatareceived = 0;
+    //Server Communication watchdog
+    var gotResponse = false;
 
     var finishedPostEvent = jQuery.Event("FinishedPost");
     var graphableDataEvent = jQuery.Event("NewData");
@@ -70,6 +73,9 @@ $(document).ready(function() {
                     setTimeout(getJSON, 500);
                 }
             }, "json");
+
+            //used for server communications watchdog
+            gotResponse = true;
     }
 
     function handleJINXData(JINX) {
@@ -121,7 +127,13 @@ $(document).ready(function() {
 
     //Ask for JINX Data once every 10 seconds in case of timeout
     function backupRequester() {
-        getJSON();
+        if (!gotResponse) {
+          getJSON();
+          console.log("Had to invoke server communications watchdog");
+        } else {
+          gotResponse = false;
+        }
+
         setTimeout(backupRequester, 10000);
     }
     backupRequester();

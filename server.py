@@ -234,10 +234,10 @@ class JINX_Server():
                 #self.closed=True
             #print("closed: ",self.closed)
         except Exception as e:# KeyboardInterrupt:
-            print("Error in hadling server request:", e)
+            print("Error in handling server request:", e)
         finally:
             pass
-        print("Server run should be over")
+        print("Server finished initializing (and maybe failed")
 
 '''
 
