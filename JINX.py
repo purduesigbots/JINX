@@ -125,15 +125,14 @@ class JINX_Controller():
 
     def startThreads(self):
         #Communicate with cortex
-        #self.serialTalker = serialReadWrite.JINX_Serial(controller)
-        #self.serialThread = threading.Thread(target=self.serialTalker.run, args=(), name="Sam")
-        #self.serialThread.start()
+        self.serialTalker = serialReadWrite.JINX_Serial(controller)
+        self.serialThread = threading.Thread(target=self.serialTalker.run, args=(), name="Sam")
+        self.serialThread.start()
         
         #Communicate with browser/GUI
         self.serverTalker = server.JINX_Server(controller)
-        #self.serverThread = threading.Thread(target=self.serverTalker.run)#, args=(self,), daemon=True)
-        #self.serverThread.start()
-        self.serverTalker.run()
+        self.serverThread = threading.Thread(target=self.serverTalker.run)#, args=(self,), daemon=True)
+        self.serverThread.start()
         
         #Shut everything down when main is shut down
         threadManagerThread = threading.Thread(target=self.threadManagerRun, name="Tom")
@@ -142,6 +141,8 @@ class JINX_Controller():
 
     def threadManagerRun(self):
         #Wait for the main thread to shut down
+        while(threading.main_thread().is_alive()):
+            pass
         threading.main_thread().join()
         self.closed = True
         
@@ -150,26 +151,23 @@ class JINX_Controller():
             self.serialTalker.shutDown()
         #DEBUG: Confirm shutdown control returns to main controller
         print("JINX Controller has shut down serial talker")
+        
         if (self.serverTalker):
-            for i in range(3):
-                try:
-                    self.serverTalker.shutDown()
-                except:
-                    pass
+            self.serverTalker.shutDown()
         #DEBUG: Confirm shutdown control returns to main controller
         print("JINX Controller has shut down Server")
         
         #DEBUG: Waiting for threads to close
         print("Waiting for serial talker and server to shut down.")
-        #if (self.serialThread.is_alive()):
-        #    self.serialThread.join()
-        #if (self.serverThread.is_alive()):
-        #    self.serverThread.join()
+        if (self.serialThread.is_alive()):
+            self.serialThread.join()
+        if (self.serverThread.is_alive()):
+            self.serverThread.join()
         
         #DEBUG: Confirm all stopped
         print("All from JINX stopped")
 
-'''
+
 #DEBUG: Test JINX_Data class
 #Should look like '"JINX" {'Hello': "3"}
 dat = JINX_Data("Hello", 3)
@@ -190,22 +188,22 @@ while(JINX_Input != "q"):
     JINX_Input = input("Enter message or quit (q): ")
 
 
-'''
 
-controller = JINX_Controller()
-serv = server.JINX_Server(controller)
 
-serverThread = threading.Thread(target=serv.run)
-serverThread.start()
-#print(threading.enumerate())
-
-while(input("Enter q to quit: ") != "q"):
-    time.sleep(1)
-
-#print("?")
-serv.shutDown()
-print("Should be quit")
-#print(threading.enumerate())
+#controller = JINX_Controller()
+#serv = server.JINX_Server(controller)
+#
+#serverThread = threading.Thread(target=serv.run)
+#serverThread.start()
+##print(threading.enumerate())
+#
+#while(input("Enter q to quit: ") != "q"):
+#    time.sleep(1)
+#
+##print("?")
+#serv.shutDown()
+#print("Should be quit")
+##print(threading.enumerate())
 
 
 

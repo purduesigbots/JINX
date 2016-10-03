@@ -13,94 +13,8 @@
 #include "main.h"
 #include "JINX.h"
 
-#define DEBUG_JINX true
-
 //Port over which all serial communication will occur. STDIN == STDOUT, so either can be used
 static FILE* comPort = stdout;
-
-//*************This space reserved for user-defined functions***************
-    //Example of user defined JINX helper function.
-    //Since it is at the top of this file, it can be called from anywhere else in this file.
-    //Good practice is to put its prototype in JINX.h, though.
-    void handleGet() {
-
-
-        char message[100];
-        readLine(message);
-        if (strcmp(message, "DEBUG_JINX") == 0) {
-            //Stringify DEBUG_JINX. I think.
-            //TODO: Make sure this works
-            writeJINXMessage("Asked for Debug");
-            sprintf(message, "%s, %d", message, DEBUG_JINX);
-        } else {
-            strcat(message, " was unable to be gotten.");
-        }
-
-        writeJINXMessage(message);
-    }
-
-
-    void handleDrive() {
-        char message[100];
-        readLine(message);
-        if (strcmp(message, "f") == 0) {
-            writeJINXMessage("Driving forward");
-            setDrive(120, 120, 120, 120);
-        } else if (strcmp(message, "b") == 0) {
-            writeJINXMessage("Driving backwards");
-            setDrive(-120, -120, -120, -120);
-        } else if (strcmp(message, "s") == 0) {
-            writeJINXMessage("Stopping");
-            setDrive(0,0,0,0);
-        } else {
-            writeJINXMessage("Invalid drive command. Should be 'f', 'b', or 's'.");
-        }
-    }
-
-    void handleOpmode() {
-        int ret;
-        int opmode;
-
-        char message[100];
-        readLine(message);
-        opmode = parseInt(message);
-
-        ret = setOpmode(opmode);
-        sprintf(message, "Operator control mode: %d.", ret);
-        writeJINXMessage(message);
-    }
-
-    //Returns integer parsed from character buffer
-    int parseInt(const char *intString) {
-        char digit;
-
-        //Limit to 32 digit integer. Please don't send 32 digit integers
-        char tempStr[33] = "";
-
-        int len = strlen(intString);
-
-        //Catch empty string
-        if (len == 0) {
-            char errorMessage[100];
-            sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
-            sendData("Error", errorMessage);
-        }
-
-        for(int i = 0; i < len; i++) {
-            digit = intString[i];
-            if ((digit < '0') || (digit > '9')) {
-                char errorMessage[100];
-                sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
-                sendData("Error", errorMessage);
-                return -1;
-            }
-
-            tempStr[i] = digit;
-        }
-
-        return atoi(tempStr);
-    }
-//**************************************************************************
 
 void initJINX(FILE* port) {
     //If the port is not a valid communications port, inform user of error
@@ -164,8 +78,7 @@ int readLine(char* stringBuffer) {
     int bufferIndex = 0;
 
     //Get character from serial. If first character is terminator, quit immediately
-    get = fgetc(comPort);
-    while(get != term) {
+    while(((get = fgetc(comPort)) != term) && (bufferIndex < MAX_IN_SIZE)) {
         stringBuffer[bufferIndex++] = get;
         get = fgetc(comPort);
     }
@@ -178,42 +91,53 @@ int readLine(char* stringBuffer) {
     return bufferIndex;
 }
 
-void parseMessage(const char *message) {
-    writeJINXMessage(message);
-
-    //Example parse. User can should replace with own body.
-    if (strcmp(message, "Option 1") == 0) {
-        //Do option 1
-        writeJINXMessage("Option 1 chosen.");
-    } else if(strcmp(message, "get") == 0) {
-        //Call another function to handle "get"
-        handleGet();
-    } else if (strcmp(message, "drive") == 0) {
-        handleDrive();
-    } else if (strcmp(message, "opmode") == 0) {
-        handleOpmode();
-    } else {
-        //Do default
-        writeJINXMessage("No comparison found");
+//Get tokenNumth token of incoming string, and put it in inStr.token
+//Do not pass a null pointer!
+int getToken(JINX *inStr, int tokenNum) {
+    //Check for invalid token request
+    if ((tokenNum < 0) || (tokenNum > MAX_IN_SIZE)) {
+        (inStr->token)[0] = NULL;
+        return -1;
     }
+
+    //Hold start and end of token
+    char *beginStr, *endStr;
+    beginStr = inStr->command;
+    int tokenCount = 0;
+
+    //Until we pass the desired number of tokens, move to the next token start
+    while (tokenCount++ < tokenNum) {
+        beginStr = strchr(beginStr, ' ');
+        if (++beginStr == NULL) {
+          (inStr->token)[0] = NULL;
+          return -1;}
+    }
+
+    //Token should be terminated by a space or the null character
+    if ((endStr = strchr(beginStr, ' ')) == NULL) {
+        endStr = strchr(beginStr, NULL);
+    }
+
+    //Set the token
+    strncpy(inStr->token, beginStr, endStr - beginStr);
+    return 0;
 }
 
 void JINXRun(void* ignore) {
 	int del = 500;
-	char inStr[100];
-
+  JINX inStr;
     //setOpmode(1);
-    //Delay a second to allow time for communication to open up
-	delay(1000);
+    //Read the garbage. Assume run before serial communications open
+	while(fgetc(comPort) != EOF);
 
 	while (true) {
-#if DEBUG_JINX
+//#if DEBUG_JINX
         writeJINXMessage("Should wait for new string");
-#endif
+//#endif
 
         //Get message, save in inStr, then parse.
-        readLine(inStr);
-        parseMessage(inStr);
+        readLine(inStr.command);
+        parseMessage(inStr.command);
 		delay(del);
 	}
 

@@ -26,7 +26,7 @@ enum Opmode {DRIVER, OTHER, TEST_MOTORS};
 
 #define DEADBAND 5
 
-static int opmode = DRIVER;
+static int opmode = OTHER;
 
 const unsigned int TRUE_SPEED[128] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

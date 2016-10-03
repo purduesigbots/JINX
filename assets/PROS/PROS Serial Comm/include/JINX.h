@@ -6,10 +6,20 @@
 #include <string.h>
 #include <stdarg.h>
 
+//DEBUG
+#define DEBUG_JINX true
+
 //CONSTANTS
 #define JINX_HEADER "JINX"
 #define JINX_DELIMETER "_"
 #define JINX_TERMINATOR "\r\n"
+
+#define MAX_IN_SIZE 100
+
+typedef struct {
+    char command[MAX_IN_SIZE + 1];
+    char token[MAX_IN_SIZE + 1];
+} JINX;
 
 //#define MAX_MESSAGE_SIZE 100
 //#define PROTOCOL_SIZE 10
@@ -62,7 +72,7 @@ int readLine(char *stringBuffer);
  *
  *User should define function and handle requests as they see fit.
  */
-void parseMessage(const char *message);
+void parseMessage(JINX *inStr);
 
 /**
  *name: identifier in JSON sent to Front End. Should not have any whitespace
@@ -92,4 +102,12 @@ int setOpmode(const int mode);
  *Returns integer representation of string.
  */
 int parseInt(const char *intString);
+
+/*
+ *@param *inStr: Pointer to struct containing string command and token
+ *@param tokenNum: Which space-separated token desired, 0 based
+ *
+ *@return -1 on failure, 0 on success
+ */
+int getToken(JINX *inStr, int tokenNum);
 #endif
