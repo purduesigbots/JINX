@@ -6,6 +6,15 @@ var enterKey = 13;
 var commandArrayIndex = 0;     //Keeps track of where in command history you are
 var commandAddress = "../assets/python3/command.py";
 
+// Use the browser's built-in functionality to quickly and safely escape
+// the string
+//from http://shebang.brandonmintern.com/foolproof-html-escaping-in-javascript/
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
 function getCommand() {
     comm = document.getElementById("commandLine").value;
     comm = (comm == "") ? commandInput : comm; //If empty string, use previous input
@@ -19,7 +28,8 @@ function addTerminal(line, Class, terminalObject) {	//append text to the termina
     //console.log(formatTime);                              //milliseconds may have to be added at a later date
 
     var shouldScrollToBottom = (terminalObject.scrollHeight - terminalObject.scrollTop <= 325);
-    $("#terminal").append($("<div class = " + Class + ">" + formatTime + "$ " + line + "</div>"));	//Insert text into terminal
+
+    $("#terminal").append($("<div class = " + Class + ">" + formatTime + "$ " + escapeHtml(line) + "</div>"));	//Insert text into terminal
     if (shouldScrollToBottom) {  //If already near bottom of div before adding text to terminal
         terminalObject.scrollTop = terminalObject.scrollHeight;	//Scroll to bottom of div
     }
@@ -36,7 +46,7 @@ function addCommandHistory(command) {
     var formatTime = date.getMinutes() + ":" + date.getSeconds();//Assume only minutes and seconds matter
     //console.log(formatTime);                              //milliseconds may have to be added at a later date
 
-    var leftTD = "<td class = commandsRecord>" + command + "</td>";
+    var leftTD = "<td class = commandsRecord>" + escapeHtml(command) + "</td>";
     var rightTD = "<td class = commandsTime>" + formatTime + "</td>";
     var tableRow = "<tr>" + leftTD + rightTD + "</tr>";
     $("#commandsTable").append($(tableRow));	//Insert command and time into table
@@ -76,6 +86,9 @@ function handleCommandScroll(index, line) {
 }
 
 function addValueTracker(varName, initialVal) {
+    varName = escapeHtml(varName);
+    initialVal = escapeHtml(initialVal);
+
     var nameCell = "<td class=varName id=" + varName + "trackerName>";
     nameCell = nameCell + varName + "</td>";
 
@@ -100,9 +113,9 @@ function downloadVarVals() {
             //continue
             return 0;
         }
-        toWrite = toWrite + key
+        toWrite = toWrite + escapeHtml(key);
         $.each(value.value, function() {
-            toWrite = toWrite + "," + this;
+            toWrite = toWrite + "," + escapeHtml(this);
         })
         toWrite = toWrite + "\r\n"
         //downloadWindow.document.write("<p>" + toWrite + "</p>");

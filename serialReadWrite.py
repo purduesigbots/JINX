@@ -96,7 +96,7 @@ class JINX_Serial():
             #print(receivedProperMessage(rawMessage))
             if(not receivedProperMessage(rawMessage)[0]):
                 #writeJINX(vexPort, receivedProperMessage(rawMessage))
-                print("Raw Message:", rawMessage, ":", receivedProperMessage(rawMessage))
+                print("Raw Message:", rawMessage, ":", receivedProperMessage(rawMessage), flush=True)
                 continue
 
             #DEBUG: Raw Message
@@ -104,8 +104,9 @@ class JINX_Serial():
             #Let controller handle the message. If no controller, just make best effort
             try:
                 self.JINX_Controller.parseCortexMessage(rawMessage)
-            except: #TODO: Find what the exception should be
-                print("090080 Hmm shouldn't be in here.")
+            except AttributeError as e: #TODO: Find what the exception should be
+                print("Probably no JINX controller.", e)
+                
                 parseCortexMessage(rawMessage)
 
             #reset message
@@ -190,7 +191,7 @@ class JINX_Serial():
             thread.start()
 
         #DEBUG: Confirm all threads succsessfully started
-        print("All serial threads started")
+        print("All serial threads started", flush=True)
 
 
 

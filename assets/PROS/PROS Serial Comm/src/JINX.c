@@ -67,7 +67,7 @@ void sendData(const char *name, const char *value) {
 }
 
 int readLine(char* stringBuffer) {
-
+    writeSerial("Trying to readline");
     //Terminating character to specify end of line/message
     char term = '\n';
 
@@ -83,8 +83,8 @@ int readLine(char* stringBuffer) {
         get = fgetc(comPort);
     }
 
-    //Terminate string with null character (Is that the term?)
-    //This means that if only a terminator is read, string is only an endstring (Sounds silly, but oh well)
+    //Terminate string with null character
+    //This means that if only a terminator is read, string is only a null terminator
     stringBuffer[bufferIndex] = '\0';
 
     //Return size of new string
@@ -128,17 +128,22 @@ void JINXRun(void* ignore) {
   JINX inStr;
     //setOpmode(1);
     //Read the garbage. Assume run before serial communications open
-	while(fgetc(comPort) != EOF);
+  delay(1000);
+	while(fcount(comPort) > 0) {
+      fgetc(comPort);
+      writeSerial("Trashing garbage\n");
+  };
+  writeSerial("finished trashing garbage\n");
 
 	while (true) {
 //#if DEBUG_JINX
-        writeJINXMessage("Should wait for new string");
+      writeJINXMessage("Should wait for new string");
 //#endif
 
-        //Get message, save in inStr, then parse.
-        readLine(inStr.command);
-        parseMessage(inStr.command);
-		delay(del);
+      //Get message, save in inStr, then parse.
+      readLine(inStr.command);
+      parseMessage(&inStr);
+	    delay(del);
 	}
 
 }

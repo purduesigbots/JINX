@@ -49,21 +49,21 @@ class JINX_Controller():
         self.serialTalker = None
         self.serverTalker = None
         self.closed = False
-    
+
     '''Assign reference to real serial instance'''
     def setSerialTalker(self, talker):
         self.serialTalker = talker
-    
+
     '''Assign reference to real server instance'''
     def setServerTalker(self, talker):
         self.serverTalker = talker
-    
+
     '''Add data to the array. May one day update helper instance variables'''
     def addJSONData(self, data):
         self.JSONData.append(data)
         #DEBUG: Confrim data added. Warning: Gets big
         #print("Data Added:", data, [str(x) for x in self.JSONData][-20:])
-    
+
 
     '''
         @param message: Stripped message from cortex
@@ -76,16 +76,16 @@ class JINX_Controller():
         #Token 0 is currently always "JINX". May change in future
         JINX_DELIMETER = "_"
         tokens = message.strip().split(JINX_DELIMETER)
-        
+
         #DEBUG: List tokens
         print("Tokens:", tokens)
-        
+
         #JSON Data sent
         if (len(tokens) == 3):
             data = JINX_Data(tokens[1], tokens[2])
             self.addJSONData(data)
             #print("Data:", data)
-            
+
         #Something else happened-unused for now
         else:
             #DEBUG: Verify raw message recieved
@@ -119,7 +119,7 @@ class JINX_Controller():
 
         #TODO: Get confirmation that server wrote correctly
         self.serialTalker.writeJINX(message, *args)
-        
+
         #TODO: Tie return to value of serialTalker.write
         return "Magic global dict worked"
 
@@ -128,12 +128,12 @@ class JINX_Controller():
         self.serialTalker = serialReadWrite.JINX_Serial(controller)
         self.serialThread = threading.Thread(target=self.serialTalker.run, args=(), name="Sam")
         self.serialThread.start()
-        
+
         #Communicate with browser/GUI
         self.serverTalker = server.JINX_Server(controller)
         self.serverThread = threading.Thread(target=self.serverTalker.run)#, args=(self,), daemon=True)
         self.serverThread.start()
-        
+
         #Shut everything down when main is shut down
         threadManagerThread = threading.Thread(target=self.threadManagerRun, name="Tom")
         threadManagerThread.start()
@@ -145,25 +145,25 @@ class JINX_Controller():
             pass
         threading.main_thread().join()
         self.closed = True
-        
+
         #Shutdown external communications
         if (self.serialTalker):
             self.serialTalker.shutDown()
         #DEBUG: Confirm shutdown control returns to main controller
         print("JINX Controller has shut down serial talker")
-        
+
         if (self.serverTalker):
             self.serverTalker.shutDown()
         #DEBUG: Confirm shutdown control returns to main controller
         print("JINX Controller has shut down Server")
-        
+
         #DEBUG: Waiting for threads to close
         print("Waiting for serial talker and server to shut down.")
         if (self.serialThread.is_alive()):
             self.serialThread.join()
         if (self.serverThread.is_alive()):
             self.serverThread.join()
-        
+
         #DEBUG: Confirm all stopped
         print("All from JINX stopped")
 
@@ -172,7 +172,7 @@ class JINX_Controller():
 #Should look like '"JINX" {'Hello': "3"}
 dat = JINX_Data("Hello", 3)
 print(dat)
-        
+
 #Used to bridge gap between serial talker and web server
 controller = JINX_Controller()
 controller.startThreads()
@@ -181,6 +181,8 @@ controller.startThreads()
 #Get STDIN messages to send to cortex
 JINX_Input = input("Enter message or quit (q): ")
 while(JINX_Input != "q"):
+    if (JINX_Input == "threading"):
+        print(threading.enumerate())
     try:
         controller.writeSerial(JINX_Input)
     except MissingTalkerError as e:
@@ -204,7 +206,3 @@ while(JINX_Input != "q"):
 #serv.shutDown()
 #print("Should be quit")
 ##print(threading.enumerate())
-
-
-
-

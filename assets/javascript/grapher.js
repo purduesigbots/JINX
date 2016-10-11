@@ -15,6 +15,7 @@
  * @UsedBy combined.html
  */
 
+
 //Takes arrays of form [[,],[,]...]
 
 //console.log("In grapher");
@@ -146,7 +147,7 @@ function changeNumDataToPlot(inputID) {
 }
 
 function addYAxisSelector(data, plotNum, choosePlotDataID, buttonClass) {
-    var dataName = graphableData[data];
+    var dataName = escapeHtml(graphableData[data]);
     //console.log("Data name: ".concat(dataName));
     dataID = dataName.concat(plotNum);
     $("#" + choosePlotDataID).append($(""
@@ -246,7 +247,7 @@ function newPlot(plotNum) {
 
     $("#" + plotBackgroundId).append($(""    //Plot Title
         + "<p id=" + headerID + " class=" + headerClass + "> "
-        + headerText + " " + graphableData[0]
+        + headerText + " " + escapeHtml(graphableData[0])
         + "</div>"));
 
     $("#" + plotBackgroundId).append($(""    //new plot canvas area
@@ -292,7 +293,7 @@ function newPlot(plotNum) {
                 dataID = dataName.concat(plotNum);
                 $("#" + choosePlotDataID + "X").append($(""
                     +"<option id=" + dataID + "X class = " + buttonClass
-                    +"X value=" + dataName + ">" + dataName + "</option>"));
+                    +"X value=" + dataName + ">" + escapeHtml(dataName) + "</option>"));
             }
 
     $("#" + divID).append($(""  //Div to store time/numPoints/RemovePlot
@@ -373,7 +374,7 @@ function newPlot(plotNum) {
             //console.log("X mode", plot.getAxes());
 
             //Update title of graph
-            document.getElementById(headerID).innerHTML = headerText + " " + toGraphToString(toGraph);
+            document.getElementById(headerID).innerHTML = headerText + " " + escapeHtml(toGraphToString(toGraph));
         });
 
         //Change how often singular plot is updated
@@ -410,7 +411,7 @@ function newPlot(plotNum) {
             //X axis
             $("#" + choosePlotDataID + "X").append($(""
                 +"<option id=" + dataID + "X class = " + buttonClass
-                +"X value=" + dataName + ">" + dataName + "</option>"));
+                +"X value=" + dataName + ">" + escapeHtml(dataName) + "</option>"));
         });
 
         //$("body").on("GraphData", update());
