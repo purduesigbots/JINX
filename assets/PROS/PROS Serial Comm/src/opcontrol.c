@@ -51,7 +51,7 @@ int setOpmode(int mode) {
         opmode = TEST_MOTORS;
         return opmode;
     } else { //If not one of the available modes
-        return -1;
+        return opmode;
     }
 }
 

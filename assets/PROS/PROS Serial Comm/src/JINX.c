@@ -66,9 +66,12 @@ void sendData(const char *name, const char *value) {
     writeJINXSerial(message);
 }
 
-int readLine(char* stringBuffer) {
-    if (stringBuffer != NULL) free(stringBuffer);
-    stringBuffer = (char*)malloc(MAX_IN_SIZE + 1);
+int readLine(JINX *inStr) {
+    if (inStr->command != NULL) {
+      free(inStr->command);
+    }
+
+    inStr->command = (char*)malloc(MAX_IN_SIZE + 1);
     writeJINXSerial("Trying to readline");
     //Terminating character to specify end of line/message
     char term = '\n';
@@ -81,12 +84,12 @@ int readLine(char* stringBuffer) {
 
     //Get character from serial. If first character is terminator, quit immediately
     while(((get = fgetc(comPort)) != term) && (bufferIndex < MAX_IN_SIZE)) {
-        stringBuffer[bufferIndex++] = get;
+        inStr->command[bufferIndex++] = get;
     }
 
     //Terminate string with null character
     //This means that if only a terminator is read, string is only a null terminator
-    stringBuffer[bufferIndex] = '\0';
+    inStr->command[bufferIndex] = '\0';
 
     //Return size of new string
     return bufferIndex;
@@ -95,17 +98,22 @@ int readLine(char* stringBuffer) {
 //Get tokenNumth token of incoming string, and put it in inStr.token
 //Do not pass a null pointer!
 int getToken(JINX *inStr, int tokenNum) {
-    if (inStr->token != NULL) free(inStr->token);
+    //writeJINXMessage("Trying to get token\n");
+    if (inStr->token != NULL) {
+      free(inStr->token);
+    }
 
     //Check for invalid token request
     if ((tokenNum < 0) || (tokenNum > MAX_IN_SIZE)) {
         inStr->token = (char*)malloc(1);
         (inStr->token)[0] = NULL;
+
         return -1;
     }
 
     //Hold start and end of token
     char *beginStr, *endStr;
+
     beginStr = inStr->command;
     int tokenCount = 0;
 
@@ -114,7 +122,9 @@ int getToken(JINX *inStr, int tokenNum) {
         beginStr = strchr(beginStr, ' ');
         if (++beginStr == NULL) {
           (inStr->token)[0] = NULL;
-          return -1;}
+
+          return -1;
+        }
     }
 
     //Token should be terminated by a space or the null character
@@ -125,12 +135,15 @@ int getToken(JINX *inStr, int tokenNum) {
     //Set the token
     inStr->token = (char*)malloc(endStr - beginStr + 2);  //+2 for good luck
     strncpy(inStr->token, beginStr, endStr - beginStr);
+
     return 0;
 }
 
 void JINXRun(void* ignore) {
 	int del = 500;
   JINX inStr;
+  inStr.command = NULL;
+  inStr.token = NULL;
     //setOpmode(1);
     //Read the garbage. Assume run before serial communications open
   delay(1000);
@@ -146,7 +159,7 @@ void JINXRun(void* ignore) {
 //#endif
 
       //Get message, save in inStr, then parse.
-      readLine(inStr.command);
+      readLine(&inStr);
       parseMessage(&inStr);
 	    delay(del);
 	}

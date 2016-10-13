@@ -65,7 +65,7 @@ void writeJINXMessage(const char *message);
  *
  *TODO: Set maximum message size to prevent buffer overflow.
  */
-int readLine(char *stringBuffer);
+int readLine(JINX *inStr);
 
 /**
  *message: message recieved from comPort
