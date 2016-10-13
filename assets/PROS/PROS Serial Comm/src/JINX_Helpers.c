@@ -6,21 +6,27 @@
     //Since it is at the top of this file, it can be called from anywhere else in this file.
     //Good practice is to put its prototype in JINX.h, though.
     void handleGet(JINX *inStr) {
+        //Get the first token from the sent command
         getToken(inStr, 1);
+
+        //Host outgoing messages
+        char *message = (char*)malloc(sizeof(char) * (strlen(inStr->token) + 30));
         if (strcmp(inStr->token, "DEBUG_JINX") == 0) {
-            //Stringify DEBUG_JINX. I think.
-            //TODO: Make sure this works
             writeJINXMessage("Asked for Debug");
-            sprintf(inStr->token, "%s, %d", inStr->token, DEBUG_JINX);
+            sprintf(message, "%s, %d", inStr->token, DEBUG_JINX);
         } else {
-            strcat(inStr->token, " was unable to be gotten.");
+            sprintf(message, "%s %s", inStr->token, " was unable to be gotten.");
         }
 
-        writeJINXMessage(inStr->token);
+        //Free malloc'd string
+        writeJINXMessage(message);
+        free(message);
+        message = NULL;
     }
 
-
+    //Drive a bit
     void handleDrive(JINX *inStr) {
+        //Get the first token from the sent command
         getToken(inStr, 1);
         if (strcmp(inStr->token, "f") == 0) {
             writeJINXMessage("Driving forward");
@@ -39,16 +45,22 @@
     void handleOpmode(JINX *inStr) {
         int ret;
         int opmode;
+        char *message;
 
+        //Get the first token from the sent command
         getToken(inStr, 1);
         opmode = parseInt(inStr->token);
+        message = (char*)malloc(40);  //Hold room for below string and integer. More room than needed
 
         ret = setOpmode(opmode);
-        sprintf(inStr->token, "Operator control mode: %d.", ret);
-        writeJINXMessage(inStr->token);
+        sprintf(message, "Operator control mode: %d.", ret);
+        writeJINXMessage(message);
+
+        free(message);
+        message = NULL;
     }
 
-    //Returns integer parsed from character buffer
+    //Returns positive integer parsed from character buffer
     int parseInt(const char *intString) {
         char digit;
 
@@ -61,10 +73,10 @@
         if (len == 0) {
             char errorMessage[100];
             sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
-            sendData("Error", errorMessage);
+            sendData("Error ", errorMessage);
         }
 
-        for(int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             digit = intString[i];
             if ((digit < '0') || (digit > '9')) {
                 char errorMessage[100];
@@ -82,7 +94,7 @@
 
 void parseMessage(JINX *inStr) {
     writeJINXMessage(inStr->command);
-    getToken(inStr, 0);
+    getToken(inStr, 0);   //Set inStr->token to first token (space-delimated word)
     //Example parse. User can should replace with own body.
     if (strcmp(inStr->token, "Option_1") == 0) {
         //Do option 1

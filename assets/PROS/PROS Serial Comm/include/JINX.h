@@ -17,8 +17,8 @@
 #define MAX_IN_SIZE 100
 
 typedef struct {
-    char command[MAX_IN_SIZE + 1];
-    char token[MAX_IN_SIZE + 1];
+    char *command;
+    char *token;
 } JINX;
 
 //#define MAX_MESSAGE_SIZE 100
@@ -47,7 +47,7 @@ bool setComPort(FILE* port);
  *Variable length arguments/string formatting in this method.
  *Strings must be formatted with sprintf or like before being passed as the message
  */
-void writeSerial(const char *message);
+void writeJINXSerial(const char *message);
 
 /**
  *message: raw string to send. Don't pass newlines.

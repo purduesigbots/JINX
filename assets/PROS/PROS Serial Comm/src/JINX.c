@@ -45,7 +45,7 @@ bool setComPort(FILE* port) {
     return false;
 }
 
-void writeSerial(const char *message) {
+void writeJINXSerial(const char *message) {
     fprintf(comPort, "%s%s%s%s", JINX_HEADER, JINX_DELIMETER, message, JINX_TERMINATOR);
     fflush(comPort);
 }
@@ -63,11 +63,13 @@ void sendData(const char *name, const char *value) {
 
     char message[100];
     sprintf(message, "%s%s%s", name, JINX_DELIMETER, value);
-    writeSerial(message);
+    writeJINXSerial(message);
 }
 
 int readLine(char* stringBuffer) {
-    writeSerial("Trying to readline");
+    if (stringBuffer != NULL) free(stringBuffer);
+    stringBuffer = (char*)malloc(MAX_IN_SIZE + 1);
+    writeJINXSerial("Trying to readline");
     //Terminating character to specify end of line/message
     char term = '\n';
 
@@ -80,7 +82,6 @@ int readLine(char* stringBuffer) {
     //Get character from serial. If first character is terminator, quit immediately
     while(((get = fgetc(comPort)) != term) && (bufferIndex < MAX_IN_SIZE)) {
         stringBuffer[bufferIndex++] = get;
-        get = fgetc(comPort);
     }
 
     //Terminate string with null character
@@ -94,8 +95,11 @@ int readLine(char* stringBuffer) {
 //Get tokenNumth token of incoming string, and put it in inStr.token
 //Do not pass a null pointer!
 int getToken(JINX *inStr, int tokenNum) {
+    if (inStr->token != NULL) free(inStr->token);
+
     //Check for invalid token request
     if ((tokenNum < 0) || (tokenNum > MAX_IN_SIZE)) {
+        inStr->token = (char*)malloc(1);
         (inStr->token)[0] = NULL;
         return -1;
     }
@@ -119,6 +123,7 @@ int getToken(JINX *inStr, int tokenNum) {
     }
 
     //Set the token
+    inStr->token = (char*)malloc(endStr - beginStr + 2);  //+2 for good luck
     strncpy(inStr->token, beginStr, endStr - beginStr);
     return 0;
 }
@@ -131,9 +136,9 @@ void JINXRun(void* ignore) {
   delay(1000);
 	while(fcount(comPort) > 0) {
       fgetc(comPort);
-      writeSerial("Trashing garbage\n");
+      writeJINXSerial("Trashing garbage\n");
   };
-  writeSerial("finished trashing garbage\n");
+  writeJINXSerial("finished trashing garbage\n");
 
 	while (true) {
 //#if DEBUG_JINX
