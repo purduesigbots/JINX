@@ -50,12 +50,12 @@ void writeJINXSerial(const char *message) {
     fflush(comPort);
 }
 
-//Wrapper function for sendData to send non-numeric data more easily
+//Wrapper function for writeJINXData to send non-numeric data more easily
 void writeJINXMessage(const char *message) {
-    sendData("msg", message);
+    writeJINXData("msg", message);
 }
 
-void sendData(const char *name, const char *value) {
+void writeJINXData(const char *name, const char *value) {
     // if (strlen(name) + strlen(value) >= MAX_MESSAGE_SIZE + PROTOCOL_SIZE) {
     //     fprintf(comPort, "Warning: Tried to send too large a message named %s", name);
     //     return;

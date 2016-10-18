@@ -3,6 +3,8 @@ import serialReadWrite
 import threading
 import time
 
+START_TIME_MILLIS = time.perf_counter() * 1000
+
 '''CLASS: Used when unable to find talker within controller'''
 class MissingTalkerError(NameError):
     pass
@@ -19,9 +21,11 @@ class JINX_Data():
         @param value: Value of JSON data
         Incoming data is not vetted for illegal characters, such as ' " '
     '''
-    def __init__(self, name, value):
+    def __init__(self, name, value, time=-1):
         self.name = name
         self.value = value
+        self.time = time
+        
         self.mid = JINX_Data.MID
         JINX_Data.MID += 1
 
@@ -30,6 +34,8 @@ class JINX_Data():
         JSON = '{"JINX": {'
         JSON += '"%s": "%s"' %(self.name, str(self.value))
         JSON += ',"MID": "%s"' %(self.mid)
+        if (self.time > -1):
+            JSON += ',"time": "%s"' %(self.time)
         JSON += '}}'
         return JSON
 
@@ -82,7 +88,8 @@ class JINX_Controller():
 
         #JSON Data sent
         if (len(tokens) == 3):
-            data = JINX_Data(tokens[1], tokens[2])
+            timeMillis = round((time.perf_counter() * 1000) - START_TIME_MILLIS)
+            data = JINX_Data(tokens[1], tokens[2], timeMillis)
             self.addJSONData(data)
             #print("Data:", data)
 
@@ -104,9 +111,17 @@ class JINX_Controller():
                 return "JINX_Error: JINX Terminated\r\n"
             time.sleep(0.5)
 
+        response = "[" + str(self.JSONData[dataNum])
+        MAX_MSGS = 100
+        for index in range(1, min(len(self.JSONData) - dataNum, MAX_MSGS)):
+            response += ", " + str(self.JSONData[dataNum + index])
+        response += "]"
+        
         #DEBUG: Confirm data returned
-        print("New JSON Data:", self.JSONData[dataNum], dataNum)
-        return self.JSONData[dataNum]
+        #print("New JSON Data:", self.JSONData[dataNum], dataNum)
+        print(response)
+        
+        return response
 
     '''
         @param Message: Raw message to send
@@ -188,21 +203,3 @@ while(JINX_Input != "q"):
     except MissingTalkerError as e:
         print("Warning, no cortex connected to send message to")
     JINX_Input = input("Enter message or quit (q): ")
-
-
-
-
-#controller = JINX_Controller()
-#serv = server.JINX_Server(controller)
-#
-#serverThread = threading.Thread(target=serv.run)
-#serverThread.start()
-##print(threading.enumerate())
-#
-#while(input("Enter q to quit: ") != "q"):
-#    time.sleep(1)
-#
-##print("?")
-#serv.shutDown()
-#print("Should be quit")
-##print(threading.enumerate())

@@ -116,7 +116,7 @@ if (opmode == DRIVER) {
             i = -99;
     }
     sprintf(mess, "%d", i);
-    sendData("TestData", mess);
+    writeJINXData("TestData", mess);
     delay(1000);
 
 
@@ -154,18 +154,18 @@ if (opmode == DRIVER) {
 
             //Send velocities
             sprintf(dataToSend, "%d", motorUpperLeftV);
-            sendData("UpperLeft", dataToSend);
+            writeJINXData("UpperLeft", dataToSend);
             sprintf(dataToSend, "%d", motorUpperRightV);
-            sendData("UpperRight", dataToSend);
+            writeJINXData("UpperRight", dataToSend);
             sprintf(dataToSend, "%d", motorLowerLeftV);
-            sendData("LowerLeft", dataToSend);
+            writeJINXData("LowerLeft", dataToSend);
             sprintf(dataToSend, "%d", motorLowerRightV);
-            sendData("LowerRight", dataToSend);
+            writeJINXData("LowerRight", dataToSend);
 
             sprintf(dataToSend, "%d", pwm);
-            sendData("DesiredPWM", dataToSend);
+            writeJINXData("DesiredPWM", dataToSend);
             sprintf(dataToSend, "%d", speed);
-            sendData("TruePWM", dataToSend);
+            writeJINXData("TruePWM", dataToSend);
 
             delay(delayTime);
         }

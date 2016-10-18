@@ -100,8 +100,8 @@ function addValueTracker(varName, initialVal) {
 }
 
 function updateValueTracker(varName, varVal) {
-    console.log(varName);
-    console.log(varVal);
+    //console.log(varName);
+    //console.log(varVal);
     document.getElementById(varName + "trackerVal").innerHTML = varVal;
 }
 

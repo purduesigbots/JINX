@@ -63,12 +63,22 @@ $(document).ready(function() {
             jsonAddress,
             {received: "".concat(numDatareceived)},
             function(data) {
-                data.JINX.MID = parseInt(data.JINX.MID);
-                console.log("JINX Data", data.JINX);
-                if(data.JINX.MID > timestamp) { //Assume strictly increasing data
-                      numDatareceived = numDatareceived + 1;
-                      handleJINXData(data.JINX);
-                } else if (data.JINX.MID == timestamp){
+                //console.log(data);
+                data[0].JINX.MID = parseInt(data[0].JINX.MID);
+                //console.log("JINX Data", data[0].JINX);
+                if(data[0].JINX.MID > timestamp) { //Assume strictly increasing data
+                      $.each(data, function(key, value) {
+                          //console.log("Hey", key, value);
+                          numDatareceived = numDatareceived + 1;
+                          handleJINXData(value.JINX);
+                      });
+
+                      console.log("Finished parsing JSON");
+                      setTimeout(getJSON, 50);
+                      console.log("Set timeout to get more data");
+                      //numDatareceived = numDatareceived + 1;
+                      //handleJINXData(data[0].JINX);
+                } else if (data[0].JINX.MID == timestamp){
                     //If server returns the same or older JSON data from some reason, ask again after 0.5 seconds
                     setTimeout(getJSON, 500);
                 }
@@ -113,16 +123,15 @@ $(document).ready(function() {
             }
 
             //Assosiate a time with each variable, since not all variables always come in together
-            inputJINXVars[JINXVar].time.push(time);
-            inputJINXVars[JINXVar].value.push(JINX[JINXVar]);
-            //console.log(inputJINXVars[JINXVar]);
-            //console.log(inputJINXVars);
+            if (JINXVar != "time") {
+              inputJINXVars[JINXVar].time.push(time);
+              inputJINXVars[JINXVar].value.push(JINX[JINXVar]);
+              //console.log(inputJINXVars[JINXVar]);
+              //console.log(inputJINXVars);
+            }
         }
 
         updateValueTracker("time", time);
-        console.log("Finished parsing JSON");
-        setTimeout(getJSON, 50);
-        console.log("Set timeout to get more data");
     }
 
     //Ask for JINX Data once every 10 seconds in case of timeout

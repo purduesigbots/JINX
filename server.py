@@ -8,16 +8,12 @@ import threading, time
 #I need a better way to talk to the request handler
 magicGlobalDict = {"JINX_Controller": None}
 
-'''
-    CLASS: Allow simultaneous connections to server
-'''
+'''CLASS: Allow simultaneous connections to server'''
 class ThreadingSimpleServer(socketserver.ThreadingMixIn,
                    HTTPServer):
     pass
 
-'''
-    CLASS: HTTPRequestHandler
-'''
+'''CLASS: HTTPRequestHandler'''
 class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
 
     '''
@@ -44,9 +40,7 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
             self.path += '.json'
         return mimetype, sendReply
 
-    '''
-        Return byte encoding of file
-    '''
+    '''Return byte encoding of file'''
     def getStaticFile(self):
         f = open(curdir + sep + self.path)
         data = f.read().encode("utf-8")
@@ -74,9 +68,7 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
     def prepareResponse(self, response):
         return response.encode('utf-8')
 
-    '''
-        Handle post requests
-    '''
+    '''Handle post requests'''
     def do_POST(self):
         #Get all posted data
         length = int(self.headers['Content-Length'])
@@ -144,14 +136,10 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
             self.send_error(404,'File Not Found: %s' % self.path)
 
 
-'''
-    CLASS: Control browser communications
-'''
+'''CLASS: Control browser communications'''
 class JINX_Server():
 
-    '''
-        Controller: Manages communication between browser and cortex
-    '''
+    '''Controller: Manages communication between browser and cortex'''
     def __init__(self, controller):
 
         #Create potential server instance, call it closed until its opened
@@ -166,9 +154,7 @@ class JINX_Server():
         if(self.JINX_Controller):
             self.JINX_Controller.setServerTalker(self)
 
-    '''
-        Closes all server communications
-    '''
+    '''Closes all server communications'''
     def shutDown(self):
 
         #Set flag to terminate all indefinite loops
@@ -239,9 +225,7 @@ class JINX_Server():
             pass
         print("Server finished initializing (and maybe failed")
 
-'''
-
-'''
+'''Run as standalone server'''
 if (__name__=="__main__"):
     controller = None
     serv = JINX_Server(controller)

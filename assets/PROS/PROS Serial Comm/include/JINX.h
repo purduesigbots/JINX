@@ -50,9 +50,17 @@ bool setComPort(FILE* port);
 void writeJINXSerial(const char *message);
 
 /**
+ *@param name: identifier in JSON sent to Front End. Should not have any whitespace
+ *@param value: value in JSON sent to Front End. No newline characters.
+ *      Users should convert numeric data to a string beforehand, because I am too lazy to implement myself
+ *      Recommended that users declare temp string and use sprintf
+ */
+void writeJINXData(const char *name, const char *value);
+
+/**
  *message: raw string to send. Don't pass newlines.
  *
- *Calls sendData with name "msg" and value message
+ *Calls writeJINXData with name "msg" and value message
  *Just a convinience to make it easy to send raw strings to GUI
  */
 void writeJINXMessage(const char *message);
@@ -73,14 +81,6 @@ int readLine(JINX *inStr);
  *User should define function and handle requests as they see fit.
  */
 void parseMessage(JINX *inStr);
-
-/**
- *name: identifier in JSON sent to Front End. Should not have any whitespace
- *value: value in JSON sent to Front End. No newline characters.
- *      Users should convert numeric data to a string beforehand, because I am too lazy to implement myself
- *      Recommended that users declare temp string and use sprintf
- */
-void sendData(const char *name, const char *value);
 
 /**
  *ignore: Do not use

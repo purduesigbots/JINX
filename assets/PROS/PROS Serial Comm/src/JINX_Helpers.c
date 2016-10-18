@@ -73,7 +73,7 @@
         if (len == 0) {
             char errorMessage[100];
             sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
-            sendData("Error ", errorMessage);
+            writeJINXData("Error ", errorMessage);
         }
 
         for (int i = 0; i < len; i++) {
@@ -81,7 +81,7 @@
             if ((digit < '0') || (digit > '9')) {
                 char errorMessage[100];
                 sprintf(errorMessage, "Error, unable to parse integer: %s", intString);
-                sendData("Error", errorMessage);
+                writeJINXData("Error", errorMessage);
                 return -1;
             }
 
