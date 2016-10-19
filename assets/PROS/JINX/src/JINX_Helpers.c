@@ -1,7 +1,7 @@
 #include "main.h"
 #include "JINX.h"
 
-#define "Hello JINX!"
+#define MSG "Hello JINX!"
 
 //*************This space reserved for user-defined functions***************
     //Example of user defined JINX helper function.
@@ -22,42 +22,6 @@
 
         //Free malloc'd string
         writeJINXMessage(message);
-        free(message);
-        message = NULL;
-    }
-
-    //Drive a bit
-    void handleDrive(JINX *inStr) {
-        //Get the first token from the sent command
-        getToken(inStr, 1);
-        if (strcmp(inStr->token, "f") == 0) {
-            writeJINXMessage("Driving forward");
-            setDrive(120, 120, 120, 120);
-        } else if (strcmp(inStr->token, "b") == 0) {
-            writeJINXMessage("Driving backwards");
-            setDrive(-120, -120, -120, -120);
-        } else if (strcmp(inStr->token, "s") == 0) {
-            writeJINXMessage("Stopping");
-            setDrive(0,0,0,0);
-        } else {
-            writeJINXMessage("Invalid drive command. Should be 'f', 'b', or 's'.");
-        }
-    }
-
-    void handleOpmode(JINX *inStr) {
-        int ret;
-        int opmode;
-        char *message;
-
-        //Get the first token from the sent command
-        getToken(inStr, 1);
-        opmode = parseInt(inStr->token);
-        message = (char*)malloc(40);  //Hold room for below string and integer. More room than needed
-
-        ret = setOpmode(opmode);
-        sprintf(message, "Operator control mode: %d.", ret);
-        writeJINXMessage(message);
-
         free(message);
         message = NULL;
     }
@@ -94,20 +58,19 @@
     }
 //**************************************************************************
 
+//Example parse. User can and should replace with own body.
 void parseMessage(JINX *inStr) {
+    //Echo entire recieved message
     writeJINXMessage(inStr->command);
-    getToken(inStr, 0);   //Set inStr->token to first token (space-delimated word)
-    //Example parse. User can should replace with own body.
+    //Set inStr->token to first token (space-delimated word)
+    getToken(inStr, 0);
+
     if (strcmp(inStr->token, "Option_1") == 0) {
         //Do option 1
         writeJINXMessage("Option 1 chosen.");
     } else if(strcmp(inStr->token, "get") == 0) {
         //Call another function to handle "get"
         handleGet(inStr);
-    } else if (strcmp(inStr->token, "drive") == 0) {
-        handleDrive(inStr);
-    } else if (strcmp(inStr->token, "opmode") == 0) {
-        handleOpmode(inStr);
     } else {
         //Do default
         writeJINXMessage("No comparison found");
