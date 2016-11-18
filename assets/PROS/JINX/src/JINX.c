@@ -31,10 +31,12 @@ bool setComPort(FILE* port) {
     //If the port is either of the UARTs, set up the pins correctly for serial data
     if (port == uart1 || port == uart2) {
         usartInit(port, 115200, SERIAL_8N1);
+        comPort = port;
         return true;
 
     //Port is set to STDOUT by default, but still allow users to specify it if they wish.
     } else if (port == stdout) {
+        comPort = port;
         return true;
     }
 

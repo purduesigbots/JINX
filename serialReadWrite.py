@@ -84,6 +84,7 @@ class JINX_Serial():
             try:
                 rawMessage = rawMessage.decode(self.encoding)
             except UnicodeDecodeError:
+                print("Error decoding message: ", rawMessage)
                 continue
 
             #If nothing was read (timeout occurred) skip message handling

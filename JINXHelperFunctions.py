@@ -16,6 +16,9 @@ class VexPortError(IOError):
     @return: valid serial port that we believe is a VEX Cortex Microcontroller, or None
 '''
 def findVexPort():
+    #return ""
+    
+    
     ports = [x for x in serial.tools.list_ports.comports()]
 
     #DEBUG: List found ports
