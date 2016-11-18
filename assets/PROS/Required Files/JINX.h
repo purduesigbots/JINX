@@ -11,7 +11,7 @@
 
 //CONSTANTS
 #define JINX_HEADER "JINX"
-#define JINX_DELIMETER "_"
+#define JINX_DELIMETER "&"
 #define JINX_TERMINATOR "\r\n"
 
 #define MAX_IN_SIZE 100

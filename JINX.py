@@ -80,7 +80,7 @@ class JINX_Controller():
 
         #Token delimeter specified in JINX Protocol (to be written)
         #Token 0 is currently always "JINX". May change in future
-        JINX_DELIMETER = "_"
+        JINX_DELIMETER = "&"
         tokens = message.strip().split(JINX_DELIMETER)
 
         #DEBUG: List tokens

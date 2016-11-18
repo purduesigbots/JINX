@@ -54,7 +54,7 @@ def closePort(port):
 def parseCortexMessage(message):
 #    print("Read: %s", message, flush=True)
 #    print("End read")
-    JINX_DELIMETER = "_"
+    JINX_DELIMETER = "&"
     tokens = message.strip().split(JINX_DELIMETER)
     print(tokens)
 
