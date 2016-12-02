@@ -74,7 +74,7 @@ class JINX_Serial():
             #Necessary because timeout does not work for some reason. Skips loop if no incoming bytes
             if(vexPort.inWaiting() < 1):
                 #print("Waiting")
-                time.sleep(0.5)
+                time.sleep(0)
                 continue
 
             #Reads until newline character. Should timeout if takes too long (But doesn't)
@@ -107,7 +107,7 @@ class JINX_Serial():
                 self.JINX_Controller.parseCortexMessage(rawMessage)
             except AttributeError as e: #TODO: Find what the exception should be
                 print("Probably no JINX controller.", e)
-                
+
                 parseCortexMessage(rawMessage)
 
             #reset message
@@ -184,10 +184,10 @@ class JINX_Serial():
     def run(self):
         readThread = threading.Thread(target=self.readJINX, args=())
         self.JINXThreads.append(readThread)
-        
+
         #DEBUG: List active threads
         print("Threads at serial start:", threading.enumerate())
-        
+
         for thread in self.JINXThreads:
             thread.start()
 
@@ -208,13 +208,22 @@ if (__name__ == "__main__"):
     talker.run()
 
     #Get message to write
-    message = input("Press 'q' to quit\n")
+    message = "blah"
     while(message is not "q"):
         try:
+            message = input("Press 'q' to quit\n")
             talker.writeJINX(message)
         except VexPortError as e:
             print(e)
-        message = input("Press 'q' to quit\n")
+        except KeyboardInterrupt:
+            print("hello ki")
+            break
+        except EOFError:
+            break
+        except Error as e:
+            print(e)
+            break
+
 
     #Close things
     talker.shutDown()

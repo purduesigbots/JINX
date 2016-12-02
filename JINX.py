@@ -25,7 +25,7 @@ class JINX_Data():
         self.name = name
         self.value = value
         self.time = time
-        
+
         self.mid = JINX_Data.MID
         JINX_Data.MID += 1
 
@@ -116,11 +116,11 @@ class JINX_Controller():
         for index in range(1, min(len(self.JSONData) - dataNum, MAX_MSGS)):
             response += ", " + str(self.JSONData[dataNum + index])
         response += "]"
-        
+
         #DEBUG: Confirm data returned
         #print("New JSON Data:", self.JSONData[dataNum], dataNum)
         print(response)
-        
+
         return response
 
     '''
@@ -157,7 +157,7 @@ class JINX_Controller():
     def threadManagerRun(self):
         #Wait for the main thread to shut down
         while(threading.main_thread().is_alive()):
-            pass
+            time.sleep(0)
         threading.main_thread().join()
         self.closed = True
 
