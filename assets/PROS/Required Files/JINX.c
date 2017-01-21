@@ -135,7 +135,7 @@ int getToken(JINX *inStr, int tokenNum) {
     }
 
     //Set the token
-    inStr->token = (char*)malloc(endStr - beginStr + 2);  //+2 for good luck
+    inStr->token = (char*)malloc(endStr - beginStr);
     strncpy(inStr->token, beginStr, endStr - beginStr);
 
     return 0;
