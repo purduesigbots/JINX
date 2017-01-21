@@ -1,13 +1,13 @@
 /**
- *JINX.c
+ * JINX.c
  *
- *Put this file in your src folder, and JINX.h in your include folder
- *Include JINX.h in your main.h
- *Call initJINX() and create start JINXRun in its own task in initialize()
+ * Put this file in your src folder, and JINX.h in your include folder
+ * Include JINX.h in your main.h
+ * Call initJINX() and create start JINXRun in its own task in initialize()
  *
- *User should replace body of parseMessage() with their own parser
- *They may of course create helper functions to call, if they desire.
- *An example helper function is defined in the space below
+ * User should replace body of parseMessage() with their own parser
+ * They may of course create helper functions to call, if they desire.
+ * An example helper function is defined in the space below
  */
 
 #include "main.h"
@@ -99,16 +99,16 @@ int readLine(JINX *inStr) {
 
 //Get tokenNumth token of incoming string, and put it in inStr.token
 //Do not pass a null pointer!
-int getToken(JINX *inStr, int tokenNum) {
+int getToken (JINX *inStr, int tokenNum) {
     //writeJINXMessage("Trying to get token\n");
     if (inStr->token != NULL) {
-      free(inStr->token);
+        free (inStr->token);
     }
 
     //Check for invalid token request
     if ((tokenNum < 0) || (tokenNum > MAX_IN_SIZE)) {
-        inStr->token = (char*)malloc(1);
-        (inStr->token)[0] = NULL;
+        inStr->token = (char*) malloc (1);
+        (inStr->token)[0] = '\0';
 
         return -1;
     }
@@ -121,22 +121,24 @@ int getToken(JINX *inStr, int tokenNum) {
 
     //Until we pass the desired number of tokens, move to the next token start
     while (tokenCount++ < tokenNum) {
-        beginStr = strchr(beginStr, ' ');
+        beginStr = strchr (beginStr, ' ');
         if (++beginStr == NULL) {
-          (inStr->token)[0] = NULL;
+            inStr->token = (char*) malloc (1);
+            (inStr->token)[0] = '\0';
 
-          return -1;
+            return -1;
         }
     }
 
     //Token should be terminated by a space or the null character
-    if ((endStr = strchr(beginStr, ' ')) == NULL) {
-        endStr = strchr(beginStr, NULL);
+    if ((endStr = strchr (beginStr, ' ')) == NULL) {
+        endStr = strchr (beginStr, NULL);
     }
 
     //Set the token
-    inStr->token = (char*)malloc(endStr - beginStr);
-    strncpy(inStr->token, beginStr, endStr - beginStr);
+    inStr->token = (char*) malloc (endStr - beginStr + 1); //+1 for null terminator
+    strncpy (inStr->token, beginStr, endStr - beginStr);
+    (inStr->token)[endStr - beginStr] = '\0';
 
     return 0;
 }
