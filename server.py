@@ -95,7 +95,7 @@ class JINX_HTTP_ServerRequestHandler(SimpleHTTPRequestHandler):
 
             #Send command to cortex
             comm = post_data['command'][0]
-            
+
             try:
                 response = str(magicGlobalDict["JINX_Controller"].writeSerial(comm))
                 response = self.prepareResponse(response)
@@ -174,7 +174,7 @@ class JINX_Server():
         #t.append(threading.Thread(target=self.httpd.shutdown_request, daemon=False))
         [th.start() for th in t]
         [th.join() for th in t]
-        
+
         #print([(atr) for atr in dir(self.httpd)])
         #print(dir(self.httpd.RequestHandlerClass.MessageClass))
 
@@ -221,8 +221,8 @@ class JINX_Server():
             #print("closed: ",self.closed)
         except Exception as e:# KeyboardInterrupt:
             print("Error in handling server request:", e)
-        finally:
-            pass
+        # finally:
+        #     pass
         print("Server finished initializing (and maybe failed")
 
 '''Run as standalone server'''

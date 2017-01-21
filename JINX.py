@@ -25,7 +25,7 @@ class JINX_Data():
         self.name = name
         self.value = value
         self.time = time
-        
+
         self.mid = JINX_Data.MID
         JINX_Data.MID += 1
 
@@ -116,11 +116,11 @@ class JINX_Controller():
         for index in range(1, min(len(self.JSONData) - dataNum, MAX_MSGS)):
             response += ", " + str(self.JSONData[dataNum + index])
         response += "]"
-        
+
         #DEBUG: Confirm data returned
         #print("New JSON Data:", self.JSONData[dataNum], dataNum)
         print(response)
-        
+
         return response
 
     '''

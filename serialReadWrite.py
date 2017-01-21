@@ -109,7 +109,7 @@ class JINX_Serial():
                 self.JINX_Controller.parseCortexMessage(rawMessage)
             except AttributeError as e: #TODO: Find what the exception should be
                 print("Probably no JINX controller.", e)
-                
+
                 parseCortexMessage(rawMessage)
 
             #reset message
@@ -186,10 +186,10 @@ class JINX_Serial():
     def run(self):
         readThread = threading.Thread(target=self.readJINX, args=(), name="Rob")
         self.JINXThreads.append(readThread)
-        
+
         #DEBUG: List active threads
         print("Threads at serial start:", threading.enumerate())
-        
+
         for thread in self.JINXThreads:
             thread.start()
 
@@ -226,7 +226,6 @@ if (__name__ == "__main__"):
         except Error as e:
             print("Generic error detected:", e)
             break
-
 
 
     #Close things
