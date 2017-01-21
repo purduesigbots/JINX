@@ -169,8 +169,8 @@ class JINX_Server():
 
         #Try to prevent any race conditions, so create new thread
         t=[]
-        t.append(threading.Thread(target=self.httpd.server_close, daemon=False))
-        t.append(threading.Thread(target=self.httpd.shutdown, daemon=False))
+        t.append(threading.Thread(target=self.httpd.server_close, daemon=False, name="Cat"))
+        t.append(threading.Thread(target=self.httpd.shutdown, daemon=False, name="Sal"))
         #t.append(threading.Thread(target=self.httpd.shutdown_request, daemon=False))
         [th.start() for th in t]
         [th.join() for th in t]
