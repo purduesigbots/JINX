@@ -146,7 +146,7 @@ class JINX_Controller():
 
         #Communicate with browser/GUI
         self.serverTalker = server.JINX_Server(controller)
-        self.serverThread = threading.Thread(target=self.serverTalker.run)#, args=(self,), daemon=True)
+        self.serverThread = threading.Thread(target=self.serverTalker.run, name="Vin")#, args=(self,), daemon=True)
         self.serverThread.start()
 
         #Shut everything down when main is shut down
@@ -198,8 +198,9 @@ JINX_Input = input("Enter message or quit (q): ")
 while(JINX_Input != "q"):
     if (JINX_Input == "threading"):
         print(threading.enumerate())
-    try:
-        controller.writeSerial(JINX_Input)
-    except MissingTalkerError as e:
-        print("Warning, no cortex connected to send message to")
+    else:
+        try:
+            controller.writeSerial(JINX_Input)
+        except MissingTalkerError as e:
+            print("Warning, no cortex connected to send message to")
     JINX_Input = input("Enter message or quit (q): ")

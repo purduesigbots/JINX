@@ -13,7 +13,7 @@ class JINX_Serial():
         self.shutdownJINX = threading.Event()
 
         #Try to open port once every 5 seconds, until told to shutdown or success
-        portThread = threading.Thread(target=self.setPort, daemon=True)
+        portThread = threading.Thread(target=self.setPort, daemon=True, name="Pam")
         portThread.start()
 
         #Pass self to controller so it can write to cortex
@@ -21,6 +21,8 @@ class JINX_Serial():
         try:
             self.JINX_Controller.setSerialTalker(self)
         except:
+            #DEBUG: Verify running mode
+            print("No usable controller found. Running in standalone mode")
             pass
 
     '''Repeatedly attempt to open port.
@@ -46,13 +48,13 @@ class JINX_Serial():
     '''
         Designed to run as its own thread
         Continuosly reads all incoming messages from cortex
-        Messages should begin with "JINX" and and with "\r\n"
+        Messages should begin with "JINX" and end with "\r\n"
     '''
     def readJINX(self):
 
         #Wait until there is a port or told to shutdown before continuing
         while((not self.vexPort) and (not self.shutdownJINX.isSet())):
-            time.sleep(0.5)
+            time.sleep(0)   #TODO: Is 0 an acceptable number for yielding CPU cycles?
         if (self.shutdownJINX.isSet()): #Return instantly if told to shutdown
             return
 
@@ -182,7 +184,7 @@ class JINX_Serial():
         Initializes reading of threads. Can be extended to test functionality as well
     '''
     def run(self):
-        readThread = threading.Thread(target=self.readJINX, args=())
+        readThread = threading.Thread(target=self.readJINX, args=(), name="Rob")
         self.JINXThreads.append(readThread)
 
         #DEBUG: List active threads
@@ -216,12 +218,13 @@ if (__name__ == "__main__"):
         except VexPortError as e:
             print(e)
         except KeyboardInterrupt:
-            print("hello ki")
+            print("Keyboard Interrupt Detected")
             break
         except EOFError:
+            print("EOF detected")
             break
         except Error as e:
-            print(e)
+            print("Generic error detected:", e)
             break
 
 
