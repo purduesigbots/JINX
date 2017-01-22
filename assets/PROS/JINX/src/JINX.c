@@ -108,7 +108,7 @@ int getToken(JINX *inStr, int tokenNum) {
     //Check for invalid token request
     if ((tokenNum < 0) || (tokenNum > MAX_IN_SIZE)) {
         inStr->token = (char*)malloc(1);
-        (inStr->token)[0] = NULL;
+        (inStr->token)[0] = '\0';
 
         return -1;
     }
@@ -123,7 +123,8 @@ int getToken(JINX *inStr, int tokenNum) {
     while (tokenCount++ < tokenNum) {
         beginStr = strchr(beginStr, ' ');
         if (++beginStr == NULL) {
-          (inStr->token)[0] = NULL;
+          inStr->token = (char*)malloc(1);
+          (inStr->token)[0] = '\0';
 
           return -1;
         }
@@ -135,8 +136,9 @@ int getToken(JINX *inStr, int tokenNum) {
     }
 
     //Set the token
-    inStr->token = (char*)malloc(endStr - beginStr + 2);  //+2 for good luck
+    inStr->token = (char*)malloc(endStr - beginStr + 1);  //+1 for null terminator
     strncpy(inStr->token, beginStr, endStr - beginStr);
+    (inStr->token)[endStr - beginStr] = '\0';
 
     return 0;
 }
