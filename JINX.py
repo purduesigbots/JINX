@@ -203,3 +203,5 @@ while(JINX_Input != "q"):
     except MissingTalkerError as e:
         print("Warning, no cortex connected to send message to")
     JINX_Input = input("Enter message or quit (q): ")
+    JINX_Input = JINX_Input.replace(";", "\n")
+    #print("Input:", JINX_Input)

@@ -74,6 +74,6 @@ void parseMessage(JINX *inStr) {
 
     } else {
         //Do default
-        writeJINXMessage("No comparison found");
+        autoJINXparse(inStr);
     }
 }
