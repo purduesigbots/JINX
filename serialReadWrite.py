@@ -1,4 +1,12 @@
 from JINXHelperFunctions import *
+import zmq
+import struct
+
+ctx = zmq.Context()
+sock = ctx.socket(zmq.SUB)
+sock.connect("tcp://raspberrypi:6680")
+sock.setsockopt(zmq.SUBSCRIBE, b'D')
+
 
 #JINXOutboundQueue = Queue()
 class JINX_Serial():
@@ -26,6 +34,7 @@ class JINX_Serial():
     '''Repeatedly attempt to open port.
         Should be called in own thread so it can be terminated'''
     def setPort(self):
+        return
         #pyserial port to cortex
         self.vexPort = None
         while(not self.vexPort): #Try to open port every 5 seconds
@@ -42,6 +51,8 @@ class JINX_Serial():
         print("Setport thread closed")
         print(threading.enumerate())
 
+    def packJINX(self, id, data):
+        return "&".join(["JINX", str(id), str(data)]) + "\r\n"
 
     '''
         Designed to run as its own thread
@@ -51,14 +62,14 @@ class JINX_Serial():
     def readJINX(self):
 
         #Wait until there is a port or told to shutdown before continuing
-        while((not self.vexPort) and (not self.shutdownJINX.isSet())):
-            time.sleep(0.5)
-        if (self.shutdownJINX.isSet()): #Return instantly if told to shutdown
-            return
+ #       while((not self.vexPort) and (not self.shutdownJINX.isSet())):
+    #        time.sleep(0.5)
+  #      if (self.shutdownJINX.isSet()): #Return instantly if told to shutdown
+   #         return
 
         #Attempt to set timeout on vexPort. Not actually sure if it works
-        vexPort = self.vexPort
-        vexPort.timeout = 1
+        ##vexPort = self.vexPort
+        ##vexPort.timeout = 1
 
         #MESSAGE_DEFAULT- defined as "No new message"
         #Raw message- reads from cortex. If no message, defaults to MESSAGE_DEFAULT
@@ -72,43 +83,54 @@ class JINX_Serial():
         while(not self.shutdownJINX.isSet()):
 
             #Necessary because timeout does not work for some reason. Skips loop if no incoming bytes
-            if(vexPort.inWaiting() < 1):
+            ##if(vexPort.inWaiting() < 1):
                 #print("Waiting")
-                time.sleep(0)
-                continue
+                ##time.sleep(0)
+                ##continue
 
             #Reads until newline character. Should timeout if takes too long (But doesn't)
             #Guaranteed at least 1 byte to read. Protocal dictates that newline promptly follows
             #TODO: Fix timeout issue
-            rawMessage = vexPort.readline()
-            try:
-                rawMessage = rawMessage.decode(self.encoding)
-            except UnicodeDecodeError:
-                print("Error decoding message: ", rawMessage)
-                continue
+            ##rawMessage = vexPort.readline()
+
+            (ign, msg) = sock.recv_multipart()
+            (l_x, l_y, r_x, r_y) = struct.unpack('4f', msg)
+
+            self.JINX_Controller.parseCortexMessage(self.packJINX("l_x", l_x))
+            self.JINX_Controller.parseCortexMessage(self.packJINX("l_y", l_y))
+            self.JINX_Controller.parseCortexMessage(self.packJINX("r_x", r_x))
+            self.JINX_Controller.parseCortexMessage(self.packJINX("r_y", r_y))
+
+            print(l_x, l_y, r_x, r_y)
+
+            ##try:
+            ##    rawMessage = rawMessage.decode(self.encoding)
+            ##except UnicodeDecodeError:
+            ##    print("Error decoding message: ", rawMessage)
+            ##    continue
 
             #If nothing was read (timeout occurred) skip message handling
-            if(rawMessage == MESSAGE_DEFAULT):
+            ##if(rawMessage == MESSAGE_DEFAULT):
                 #DEBUG: Nothing Read
-                print("timeout occurred")
-                continue
+            ##    print("timeout occurred")
+            ##    continue
 
             #DEBUG: receivedProperMessage
             #print(receivedProperMessage(rawMessage))
-            if(not receivedProperMessage(rawMessage)[0]):
+            ##if(not receivedProperMessage(rawMessage)[0]):
                 #writeJINX(vexPort, receivedProperMessage(rawMessage))
-                print("Raw Message:", rawMessage, ":", receivedProperMessage(rawMessage), flush=True)
-                continue
+            ##    print("Raw Message:", rawMessage, ":", receivedProperMessage(rawMessage), flush=True)
+            ##    continue
 
             #DEBUG: Raw Message
             #print(rawMessage)
             #Let controller handle the message. If no controller, just make best effort
-            try:
-                self.JINX_Controller.parseCortexMessage(rawMessage)
-            except AttributeError as e: #TODO: Find what the exception should be
-                print("Probably no JINX controller.", e)
+            ##try:
+            ##    self.JINX_Controller.parseCortexMessage(rawMessage)
+            ##except AttributeError as e: #TODO: Find what the exception should be
+            ##    print("Probably no JINX controller.", e)
 
-                parseCortexMessage(rawMessage)
+            ##    parseCortexMessage(rawMessage)
 
             #reset message
             rawMessage = MESSAGE_DEFAULT

@@ -179,7 +179,7 @@ class JINX_Server():
         #print(dir(self.httpd.RequestHandlerClass.MessageClass))
 
         #DEBUG: Confirm state of server, Confirm closed
-        print("Server httpd:", self.httpd, end = " ")
+        #print("Server httpd:", self.httpd, end = " ")
         print("Server closed")
 
     '''
