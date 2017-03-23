@@ -158,6 +158,16 @@ float getJINXfloat(JINX *inStr, int tokenNum) {
     return atof(inStr->token);
 }
 
+long getJINXlong(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return atol(inStr->token);
+}
+
+unsigned long getJINXunsigned_long(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return (unsigned long)atol(inStr->token);
+}
+
 void JINXRun(void* ignore) {
 	int del = 500;
   JINX inStr;

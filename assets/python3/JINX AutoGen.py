@@ -5,9 +5,12 @@ import os
 import tkinter
 import tkinter.filedialog
 import re
+import itertools
 
 autoGenName = "JINXAutoGen"
-types = ("int", "float", "void")
+types = ("int", "float", "void", "long")
+prefixes = ["const", "unsigned"]
+ignoreForFuncCalls = ["const"]
 
 def getSubDirs(directory):
     try:
@@ -34,8 +37,12 @@ SOL_RE = "^"	#start of line match
 ANY_RE = "."	#Any character match
 WHT_RE = r"\s"	#Any whitespace match
 
+prefixes += [WHT_RE.join(prefix) for prefix in (itertools.permutations(prefixes))]
+print(prefixes)
+C_PREFIX_RE = "(" + "|".join(prefixes) + ")?"
+print("Pre:", C_PREFIX_RE)
 C_IDENT_RE = "[_a-zA-Z][_a-zA-Z0-9]*"	#Valid c identifier match
-C_TYPES_RE = "((unsigned" + WHT_RE + "+)?" + "(" + "|".join(types) + "))"	#Valid C type match
+C_TYPES_RE = "((" + C_PREFIX_RE + WHT_RE + "+)?" + "(" + "|".join(types) + "))"	#Valid C type match
 C_PARAM_RE = "(" + C_TYPES_RE + WHT_RE + "+" + C_IDENT_RE + ")"
 C_FUNCID_RE = SOL_RE + C_PARAM_RE
 C_PARAMS_RE = "((" + C_PARAM_RE + ")?(, " + C_PARAM_RE + ")*)"
@@ -68,7 +75,7 @@ def parseFunc(func, outFile):
     funcArgs = func[func.find("(") + 1: func.find(")")].strip().split(",")
     #print(funcArgs)
     for i in range(len(funcArgs)):
-        funcArgs[i] = "_".join(funcArgs[i].strip().split()[:-1])
+        funcArgs[i] = "_".join([arg for arg in funcArgs[i].strip().split()[:-1] if arg not in ignoreForFuncCalls])
     #print(funcArgs)
     with open(outFile, "a") as autogenC:
         autogenC.write("if (strcmp(\"{}\", {}) == 0) {{\n".format(funcName, JINXarg))

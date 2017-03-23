@@ -1,5 +1,6 @@
 #include "main.h"
 #include "JINX.h"
+#include "JINXAutoGen.h"
 
 #define MSG "Hello JINX!"
 

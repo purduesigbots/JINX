@@ -143,6 +143,31 @@ int getToken(JINX *inStr, int tokenNum) {
     return 0;
 }
 
+int getJINXint(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return atoi(inStr->token);
+}
+
+unsigned int getJINXunsigned_int(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return (unsigned int)getJINXint(inStr, tokenNum);
+}
+
+float getJINXfloat(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return atof(inStr->token);
+}
+
+long getJINXlong(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return atol(inStr->token);
+}
+
+unsigned long getJINXunsigned_long(JINX *inStr, int tokenNum) {
+    getToken(inStr, tokenNum);
+    return (unsigned long)atol(inStr->token);
+}
+
 void JINXRun(void* ignore) {
 	int del = 500;
   JINX inStr;

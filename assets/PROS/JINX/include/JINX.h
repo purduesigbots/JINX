@@ -118,4 +118,8 @@ int getJINXint(JINX *inStr, int tokenNum);
 unsigned int getJINXunsigned_int(JINX *inStr, int tokenNum);
 
 float getJINXfloat(JINX *inStr, int tokenNum);
+
+long getJINXlong(JINX *inStr, int tokenNum);
+
+unsigned long getJINXunsigned_long(JINX *inStr, int tokenNum);
 #endif

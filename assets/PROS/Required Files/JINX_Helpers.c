@@ -1,5 +1,6 @@
 #include "main.h"
 #include "JINX.h"
+#include "JINXAutoGen.h"
 
 #define MSG "Hello JINX!"
 
@@ -64,15 +65,16 @@ void parseMessage(JINX *inStr) {
     writeJINXMessage(inStr->command);
     //Set inStr->token to first token (space-delimated word)
     getToken(inStr, 0);
-
     if (strcmp(inStr->token, "Option_1") == 0) {
         //Do option 1
         writeJINXMessage("Option 1 chosen.");
+
     } else if(strcmp(inStr->token, "get") == 0) {
         //Call another function to handle "get"
         handleGet(inStr);
+
     } else {
         //Do default
-        writeJINXMessage("No comparison found");
+        autoJINXparse(inStr);
     }
 }

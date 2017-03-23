@@ -5,6 +5,7 @@
 #include "main.h"
 #include <string.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 //DEBUG
 #define DEBUG_JINX true
@@ -110,4 +111,15 @@ int parseInt(const char *intString);
  *@return -1 on failure, 0 on success
  */
 int getToken(JINX *inStr, int tokenNum);
+
+//For use with JINX AutoGen
+int getJINXint(JINX *inStr, int tokenNum);
+
+unsigned int getJINXunsigned_int(JINX *inStr, int tokenNum);
+
+float getJINXfloat(JINX *inStr, int tokenNum);
+
+long getJINXlong(JINX *inStr, int tokenNum);
+
+unsigned long getJINXunsigned_long(JINX *inStr, int tokenNum);
 #endif
