@@ -5,7 +5,7 @@ import struct
 ctx = zmq.Context()
 sock = ctx.socket(zmq.SUB)
 sock.connect("tcp://raspberrypi:6680")
-sock.setsockopt(zmq.SUBSCRIBE, b'D')
+sock.setsockopt(zmq.SUBSCRIBE, b'vM')
 
 
 #JINXOutboundQueue = Queue()
@@ -94,7 +94,7 @@ class JINX_Serial():
             ##rawMessage = vexPort.readline()
 
             (ign, msg) = sock.recv_multipart()
-            (l_x, l_y, r_x, r_y) = struct.unpack('4f', msg)
+            (_, _, _, _, l_x, l_y, r_x, r_y, _) = struct.unpack('4B4if', msg)
 
             self.JINX_Controller.parseCortexMessage(self.packJINX("l_x", l_x))
             self.JINX_Controller.parseCortexMessage(self.packJINX("l_y", l_y))
