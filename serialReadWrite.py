@@ -5,7 +5,7 @@ import struct
 ctx = zmq.Context()
 sock = ctx.socket(zmq.SUB)
 sock.connect("tcp://raspberrypi:6680")
-sock.setsockopt(zmq.SUBSCRIBE, b'vM')
+sock.setsockopt(zmq.SUBSCRIBE, b'yres')
 
 
 #JINXOutboundQueue = Queue()
@@ -94,14 +94,18 @@ class JINX_Serial():
             ##rawMessage = vexPort.readline()
 
             (ign, msg) = sock.recv_multipart()
-            (_, _, _, _, l_x, l_y, r_x, r_y, _) = struct.unpack('4B4if', msg)
+#            (_, _, _, _, l_x, l_y, r_x, r_y, _) = struct.unpack('4B4if', msg)
 
-            self.JINX_Controller.parseCortexMessage(self.packJINX("l_x", l_x))
-            self.JINX_Controller.parseCortexMessage(self.packJINX("l_y", l_y))
-            self.JINX_Controller.parseCortexMessage(self.packJINX("r_x", r_x))
-            self.JINX_Controller.parseCortexMessage(self.packJINX("r_y", r_y))
+#            self.JINX_Controller.parseCortexMessage(self.packJINX("l_x", l_x))
+#            self.JINX_Controller.parseCortexMessage(self.packJINX("l_y", l_y))
+#            self.JINX_Controller.parseCortexMessage(self.packJINX("r_x", r_x))
+#            self.JINX_Controller.parseCortexMessage(self.packJINX("r_y", r_y))
 
-            print(l_x, l_y, r_x, r_y)
+#            print(l_x, l_y, r_x, r_y)
+            (kf, dr, raw) = struct.unpack('3f', msg)
+            self.JINX_Controller.parseCortexMessage(self.packJINX("kf", kf))
+            self.JINX_Controller.parseCortexMessage(self.packJINX("dead-reckon", dr))
+            self.JINX_Controller.parseCortexMessage(self.packJINX("update", raw))
 
             ##try:
             ##    rawMessage = rawMessage.decode(self.encoding)

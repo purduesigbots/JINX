@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import server
 import serialReadWrite
 import threading
