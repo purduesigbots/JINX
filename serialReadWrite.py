@@ -4,7 +4,7 @@ import struct
 
 ctx = zmq.Context()
 sock = ctx.socket(zmq.SUB)
-sock.connect("tcp://raspberrypi:6680")
+sock.connect("tcp://192.168.1.117:6680")
 sock.setsockopt(zmq.SUBSCRIBE, b'yres')
 
 
@@ -105,7 +105,7 @@ class JINX_Serial():
             (kf, dr, raw) = struct.unpack('3f', msg)
             self.JINX_Controller.parseCortexMessage(self.packJINX("kf", kf))
             self.JINX_Controller.parseCortexMessage(self.packJINX("dead-reckon", dr))
-            self.JINX_Controller.parseCortexMessage(self.packJINX("update", raw))
+            self.JINX_Controller.parseCortexMessage(self.packJINX("predict", raw))
 
             ##try:
             ##    rawMessage = rawMessage.decode(self.encoding)
